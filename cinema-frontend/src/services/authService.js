@@ -14,3 +14,12 @@ export const loginUser = async (email, password) => {
         throw error.response ? error.response.data : { message: "Fail to connect to server" };
     }
 };
+
+export const registerUser = async (email, phone, password) => {
+    try {
+        const response = await axios.post(`${API_URL}/register`, { email, phone, password });
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : { message: "Fail to connect to server" };
+    }
+};
