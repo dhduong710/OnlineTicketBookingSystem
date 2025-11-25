@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import com.group7.cinema_backend.dto.AuthResponse; 
+import com.group7.cinema_backend.dto.LoginRequest; 
+
 @RestController
 @RequestMapping("/api/auth") // Tiền tố cho tất cả API trong file này
 @RequiredArgsConstructor
@@ -23,5 +27,10 @@ public class AuthenticationController {
             // Trả về lỗi nếu email/sđt trùng (lỗi 400 Bad Request)
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authenticationService.login(request));
     }
 }
