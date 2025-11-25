@@ -1,49 +1,74 @@
 import { useState } from 'react';
 import { loginUser } from '../services/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+import { FaUser, FaLock } from 'react-icons/fa';
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
 function Login() {
-    const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            await loginUser(email, password);
-            alert("Đăng nhập thành công!");
-            navigate('/'); // Chuyển về trang chủ
+            await loginUser(identifier, password);
+            toast.success("Login successful!");
+            navigate('/'); 
         } catch (error) {
-            alert("Đăng nhập thất bại: " + (error.message || "Sai thông tin"));
+            toast.error("Login failed: " + (error.message || "Incorrect information"));
         }
     };
 
     return (
-        <div style={{ padding: '50px', textAlign: 'center' }}>
-            <h2>Đăng Nhập Hệ Thống Vé</h2>
+        <div className="auth-container">
+            <img src="/logo.png" alt="HUST Logo" className="hust-logo" />
+            <h1 className="brand-title">HUST CINEMA</h1>
+            <h2>Welcome Back</h2>
+            
             <form onSubmit={handleLogin}>
-                <div>
+      
+                <div className="input-wrapper">
+                    <FaUser className="input-icon" />
                     <input 
-                        type="email" 
-                        placeholder="Email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
+                        type="text" 
+                        placeholder="Email or Phone number" 
+                        value={identifier} 
+                        onChange={(e) => setIdentifier(e.target.value)} 
                         required 
-                        style={{ padding: '10px', margin: '10px' }}
                     />
                 </div>
-                <div>
+
+
+                <div className="input-wrapper">
+                    <FaLock className="input-icon" />
                     <input 
-                        type="password" 
-                        placeholder="Mật khẩu" 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="Password" 
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)} 
                         required 
-                        style={{ padding: '10px', margin: '10px' }}
                     />
+                    <div 
+                        className="toggle-password" 
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? <MdVisibility /> : <MdVisibilityOff />}
+                    </div>
                 </div>
-                <button type="submit" style={{ padding: '10px 20px' }}>Đăng nhập</button>
+
+
+                <button type="submit" className="btn-primary" style={{marginTop: '20px'}}>
+                    LOGIN
+                </button>
             </form>
+
+            <div className="auth-link">
+                Don't have an account? <Link to="/register">Create Account</Link>
+            </div>
         </div>
     );
 }

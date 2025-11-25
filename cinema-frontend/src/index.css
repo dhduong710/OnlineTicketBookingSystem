@@ -1,0 +1,148 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+}
+
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('/bg-hust.jpg'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+
+  filter: blur(5px); 
+  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.6); 
+  
+  z-index: -1;
+  transform: scale(1.05);
+}
+
+
+.auth-container {
+  background: rgba(255, 255, 255, 0.85); 
+  width: 400px;
+  padding: 40px 40px 30px; 
+  border-radius: 20px; 
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); 
+  text-align: center;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.hust-logo { width: 90px; margin-bottom: 15px; }
+
+
+.brand-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #b90000;
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+h2 { 
+  color: #333; 
+  margin-bottom: 30px; 
+  font-weight: 600; 
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+}
+
+
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  cursor: pointer;
+  font-size: 18px;
+}
+.toggle-password:hover { color: #b90000; }
+
+
+.input-wrapper input {
+  width: 100%;
+  padding: 14px 45px 14px 45px; 
+  border: 1px solid #e1e1e1;
+  border-radius: 50px; 
+  font-size: 15px;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+  box-sizing: border-box; 
+}
+
+.input-wrapper input:focus {
+  border-color: #b90000;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(185, 0, 0, 0.15);
+  outline: none;
+}
+
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(45deg, #8f0000, #d60000); /* Gradient đỏ */
+  color: white;
+  border: none;
+  border-radius: 50px; 
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+  box-shadow: 0 5px 15px rgba(185, 0, 0, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(185, 0, 0, 0.4);
+  background: linear-gradient(45deg, #d60000, #ff1a1a);
+}
+
+
+.auth-options {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+.forgot-password { color: #666; text-decoration: none; }
+.forgot-password:hover { color: #b90000; text-decoration: underline; }
+
+.auth-link { margin-top: 25px; font-size: 14px; color: #555; }
+.auth-link a { color: #b90000; text-decoration: none; font-weight: 700; }
+.auth-link a:hover { text-decoration: underline; }
