@@ -47,21 +47,19 @@ public class AuthenticationService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        // 1. Xác thực username/password
-        // Nếu sai pass, hàm này sẽ tự ném lỗi (Exception), code dừng tại đây.
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getUsername(), 
                         request.getPassword()
                 )
         );
 
-        // 2. Nếu vượt qua bước trên nghĩa là đăng nhập đúng.
-        // Tìm user trong DB để lấy thông tin tạo token
-        var user = customerRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found")); // Không tìm thấy dù đã auth thành công 
+        // Lấy thông tin user từ DB để tạo Token
+        var user = customerRepository.findByEmail(request.getUsername())
+                .or(() -> customerRepository.findByPhone(request.getUsername())) 
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 3. Tạo token
+        // Tạo token (Token chứa Email làm chủ thể)
         var jwtToken = jwtService.generateToken(user.getEmail());
 
         return new AuthResponse(jwtToken);
