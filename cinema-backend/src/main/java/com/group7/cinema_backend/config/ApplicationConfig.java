@@ -22,6 +22,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> customerRepository.findByEmail(username)
+                .or(() -> customerRepository.findByPhone(username)) // Nếu email không có, tìm bằng SĐT
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
