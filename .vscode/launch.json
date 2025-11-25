@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "CinemaBackendApplication",
+            "request": "launch",
+            "mainClass": "com.group7.cinema_backend.CinemaBackendApplication",
+            "projectName": "cinema-backend",
+            
+            "env": {
+                "DB_USERNAME": "postgres",
+                "DB_PASSWORD": "hoangduong",
+                "JWT_SECRET_KEY": "MjAyM0hvY2h1dGxhbmM2NzcyMDIzbW90aGFpYmRib25uYW1zYXViYXl0YW05"
+            }
+        }
+    ]
+}
