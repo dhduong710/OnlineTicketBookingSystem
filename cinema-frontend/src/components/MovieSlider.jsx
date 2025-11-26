@@ -18,17 +18,8 @@ function MovieSlider() {
 
     // Xử lý khi bấm mua vé ---
     const handleBuyTicket = (movieId) => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            // Chưa đăng nhập -> Thông báo và đẩy sang trang Login
-            toast.info("Vui lòng đăng nhập để đặt vé!");
-            navigate("/login");
-        } else {
-            // Đã đăng nhập -> Sau này sẽ chuyển sang trang chọn ghế
-            // Tạm thời thông báo OK
-            toast.success(`Đang mở trang đặt vé!`);
-            // navigate(`/booking/${movieId}`); // (Dành cho bước sau)
-        }
+        // Chuyển hướng sang trang chi tiết phim
+        navigate(`/movie/${movieId}`);
     };
 
     const settings = {
@@ -50,7 +41,7 @@ function MovieSlider() {
             <Slider {...settings}>
                 {movies.map((movie) => (
                     <div key={movie.id} className="movie-card">
-                        <div className="movie-img-wrapper">
+                       <div className="movie-img-wrapper" onClick={() => handleBuyTicket(movie.id)} style={{cursor: 'pointer'}}>
                             <img src={movie.posterUrl} alt={movie.title} />
                             <div className="overlay">
                                 {/* Gắn hàm xử lý vào nút Mua Vé */}
