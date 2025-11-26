@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import MovieDetail from './pages/MovieDetail'; 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BookingPage from './pages/BookingPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />} />
         <Route path="/movie/:id" element={<MovieDetail />} /> 
+        <Route path="/booking/:movieId" element={<BookingPage />} />
       </Routes>
     </BrowserRouter>
   );

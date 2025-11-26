@@ -366,3 +366,207 @@ h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
   .detail-meta { justify-content: center; }
   .detail-actions { justify-content: center; }
 }
+
+/* --- BOOKING PAGE --- */
+.booking-page {
+  padding-top: 70px;
+  background-color: #fdfbf7;
+  min-height: 100vh;
+}
+
+.booking-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.booking-header {
+  text-align: center;
+  border-bottom: 2px solid #b90000;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+.booking-header h1 { color: #b90000; text-transform: uppercase; margin: 0; }
+.booking-header p { color: #666; margin-top: 5px; }
+
+/* Thanh chọn ngày */
+.date-selector {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto; /* Cho phép cuộn ngang */
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+  
+  /* Giúp cuộn mượt hơn trên iOS/Mac */
+  -webkit-overflow-scrolling: touch; 
+  
+  /* Ẩn thanh cuộn trên Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #b90000 #f0f0f0;
+}
+.date-btn {
+  flex: 0 0 auto; /* Không co giãn */
+  width: 90px;
+  height: 90px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.date-btn:hover { border-color: #b90000; }
+.date-btn.active {
+  background: #b90000;
+  color: white;
+  border-color: #b90000;
+  box-shadow: 0 5px 15px rgba(185, 0, 0, 0.3);
+}
+.day-name { font-size: 13px; text-transform: capitalize; margin-bottom: 5px; }
+.day-number { font-size: 20px; font-weight: bold; }
+
+.date-selector::-webkit-scrollbar {
+  height: 8px; /* Thanh cuộn mỏng */
+}
+
+.date-selector::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 4px;
+}
+
+.date-selector::-webkit-scrollbar-thumb {
+  background: #ccc; 
+  border-radius: 4px;
+}
+
+.date-selector::-webkit-scrollbar-thumb:hover {
+  background: #b90000; /* Hover thì chuyển đỏ */
+}
+
+/* Danh sách suất chiếu */
+.cinema-block {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+  border-left: 5px solid #b90000;
+}
+.cinema-name { margin-top: 0; color: #333; }
+
+.time-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+.time-btn {
+  padding: 10px 20px;
+  background: #fdfbf7;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+  min-width: 80px;
+}
+.time-btn:hover {
+  background: white;
+  border-color: #b90000;
+  color: #b90000;
+}
+.time-btn .time { display: block; font-size: 16px; font-weight: bold; }
+.time-btn .format { display: block; font-size: 12px; color: #888; margin-top: 2px; }
+
+.no-showtime {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-style: italic;
+}
+
+
+/* Filter Bar Style */
+.filter-bar {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+  border: 1px solid #eee;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+.filter-group:last-child { margin-bottom: 0; }
+
+.filter-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.filter-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 10px 25px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  transition: 0.3s;
+}
+
+.filter-btn:hover {
+  border-color: #b90000;
+  color: #b90000;
+}
+
+.filter-btn.active {
+  background: #b90000;
+  color: white;
+  border-color: #b90000;
+  box-shadow: 0 4px 10px rgba(185, 0, 0, 0.3);
+}
+
+/* Text hướng dẫn khi chưa chọn đủ */
+.instruction-text {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+  background: rgba(185, 0, 0, 0.05);
+  border-radius: 12px;
+  border: 1px dashed #b90000;
+}
+
+/* Hiệu ứng hiện dần */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.time-btn .room-label {
+    display: block;
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+}

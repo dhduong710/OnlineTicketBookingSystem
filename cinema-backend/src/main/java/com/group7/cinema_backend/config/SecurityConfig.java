@@ -26,7 +26,7 @@ public class SecurityConfig {
             .cors(org.springframework.security.config.Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/movies/**").permitAll() 
+                .requestMatchers("/api/auth/**", "/api/movies/**", "/api/showtimes/**").permitAll() 
                 .anyRequest().authenticated()
             )
 
