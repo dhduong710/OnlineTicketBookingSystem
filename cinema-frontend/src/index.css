@@ -570,3 +570,159 @@ h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
     color: #999;
     margin-top: 2px;
 }
+
+/* --- SEAT SELECTION PAGE */
+.seat-selection-page {
+  padding-top: 70px;
+  background-color: #fdfbf7; /* 1. Đổi nền sang trắng sữa */
+  min-height: 100vh;
+  padding-bottom: 100px; 
+  color: #333; 
+}
+
+.seat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 20px;
+  overflow-x: auto; 
+}
+
+/* Màn hình chiếu phim */
+.screen-title { font-size: 14px; color: #666; margin-bottom: 5px; letter-spacing: 2px; font-weight: bold; }
+.screen-display {
+  height: 60px;
+  width: 100%;
+
+  background: linear-gradient(to bottom, #dcdcdc, transparent); 
+  transform: perspective(100px) rotateX(-5deg);
+  margin-bottom: 40px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1); 
+  border-top: 4px solid #999; 
+  border-radius: 50% 50% 0 0 / 10px 10px 0 0;
+}
+
+/* Sơ đồ ghế */
+.seat-map { display: inline-block; }
+.seat-row { display: flex; align-items: center; margin-bottom: 10px; justify-content: center; }
+.row-label { width: 30px; font-weight: bold; color: #333; margin-right: 15px; } 
+.row-seats { display: flex; gap: 8px; }
+
+/* Hình dáng ghế chung */
+.seat-item {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px; 
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: 0.2s;
+  font-size: 24px; 
+  background-color: white; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+}
+
+/* Số ghế */
+.seat-item .seat-number {
+  font-size: 10px;
+  position: absolute;
+  top: 4px;
+  font-weight: bold;
+  color: #555; 
+}
+
+/* --- MÀU SẮC GHẾ --- */
+
+/* Ghế thường: Viền xám, icon xám nhạt */
+.seat-item.standard {
+  color: #e0e0e0; 
+  border: 1px solid #ccc;
+}
+.seat-item.standard:hover { border-color: #b90000; color: #f8d7da; }
+
+/* --- MÀU GHẾ VIP --- */
+
+/* Ghế VIP: Tông tím */
+.seat-item.vip {
+  color: #9c27b0; 
+  border: 1px solid #8e24aa; 
+  background-color: #f3e5f5; 
+}
+
+
+.seat-item.vip .seat-number {
+  color: #4a148c; 
+}
+
+/* Hiệu ứng khi di chuột vào ghế VIP */
+.seat-item.vip:hover {
+  border-color: #b90000; /* Hover vào thì viền chuyển đỏ */
+  background-color: #e1bee7; 
+  transform: scale(1.1);
+}
+
+/* Chú thích cho ghế VIP */
+.seat-dot.vip {
+  border: 1px solid #8e24aa;
+  background: #f3e5f5; 
+}
+/* Ghế ĐANG CHỌN: Đỏ */
+.seat-item.selected {
+  background-color: #b90000;
+  color: white !important;
+  border-color: #b90000;
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(185, 0, 0, 0.3);
+}
+.seat-item.selected .seat-number { color: white; }
+
+/* Ghế ĐÃ ĐẶT: Xám */
+.seat-item.booked {
+  background-color: #e0e0e0;
+  color: #fff;
+  border: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+.seat-item.booked .seat-number { display: none; } 
+
+/* Chú thích */
+.seat-legend { display: flex; justify-content: center; gap: 20px; margin-top: 40px; }
+.legend-item { display: flex; align-items: center; font-size: 14px; color: #333; font-weight: 500; }
+.seat-dot { width: 20px; height: 20px; border-radius: 4px; margin-right: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+.seat-dot.standard { border: 1px solid #ccc; background: white; }
+.seat-dot.vip { border: 1px solid #8e24aa; background: #f3e5f5; }
+.seat-dot.selected { background: #b90000; }
+.seat-dot.booked { background: #e0e0e0; }
+
+/* Footer cố định */
+.booking-footer {
+  position: fixed;
+  bottom: 0; left: 0; width: 100%;
+  background: white;
+  padding: 15px 40px;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.05); 
+  color: #333;
+  z-index: 100;
+  border-top: 1px solid #eee;
+}
+.footer-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.total-info p { margin: 5px 0; font-size: 15px; }
+.total-price { font-size: 20px; font-weight: 800; color: #b90000; }
+.btn-continue {
+  padding: 12px 40px;
+  background: #b90000;
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(185, 0, 0, 0.3);
+}
+.btn-continue:hover { background: #960000; transform: translateY(-2px); }
