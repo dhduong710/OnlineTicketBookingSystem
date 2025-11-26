@@ -41,7 +41,7 @@ public class BookingService {
 
         // 4. QUAN TRỌNG: Kiểm tra xem ghế đã bị ai đặt chưa?
         // Logic: Lấy tất cả vé đã bán của suất này, xem có trùng ghế không
-        List<Ticket> bookedTickets = ticketRepository.findByShowtimeId(showtime.getId());
+        List<Ticket> bookedTickets = ticketRepository.findTicketsByShowtimeId(showtime.getId());
         for (Ticket ticket : bookedTickets) {
             if (request.getSeatIds().contains(ticket.getSeat().getId())) {
                 throw new RuntimeException("Ghế " + ticket.getSeat().getName() + " vừa mới bị người khác đặt!");

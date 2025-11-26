@@ -726,3 +726,103 @@ h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
   box-shadow: 0 4px 10px rgba(185, 0, 0, 0.3);
 }
 .btn-continue:hover { background: #960000; transform: translateY(-2px); }
+
+/* --- CUSTOM CONFIRM MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; 
+  animation: fadeIn 0.3s;
+}
+
+.modal-content {
+  background: white;
+  width: 400px;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s;
+  position: relative;
+  border-top: 5px solid #b90000; 
+}
+
+.modal-header h3 {
+  margin: 0 0 10px;
+  color: #b90000;
+  font-size: 22px;
+  text-transform: uppercase;
+}
+
+.modal-body p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.modal-info {
+  background: #fdfbf7;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  border: 1px dashed #ddd;
+}
+.modal-info div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.modal-info span.highlight {
+  font-weight: bold;
+  color: #333;
+}
+.modal-info span.price {
+  font-weight: 800;
+  color: #b90000;
+  font-size: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 12px;
+  background: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-cancel:hover { background: #e0e0e0; }
+
+.btn-confirm {
+  flex: 1;
+  padding: 12px;
+  background: #b90000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 4px 10px rgba(185, 0, 0, 0.3);
+}
+.btn-confirm:hover { background: #960000; transform: translateY(-2px); }
+
+/* Animation */
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
