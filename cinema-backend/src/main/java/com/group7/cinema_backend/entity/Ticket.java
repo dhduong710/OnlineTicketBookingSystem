@@ -30,8 +30,8 @@ public class Ticket {
     private Seat seat;
 
     // Vé thuộc về đơn hàng nào 
-    // @ManyToOne
-    // @JoinColumn(name = "booking_id")
-    // private Booking booking;
+    @ManyToOne
+    @JoinColumn(name = "booking_id", nullable = false)
+    private Booking booking;
     
 }
