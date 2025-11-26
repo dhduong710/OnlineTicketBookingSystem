@@ -1,148 +1,236 @@
-
+/* =========================================
+   1. GLOBAL 
+   ========================================= */
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+  min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  position: relative;
+  background-color: #fdfbf7; 
+  overflow-y: auto; /* Mở khóa cuộn dọc */
+  overflow-x: hidden; /* Chặn kéo ngang */
 }
 
-
-body::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url('/bg-hust.jpg'); 
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  
-
-  filter: blur(5px); 
-  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.6); 
-  
-  z-index: -1;
-  transform: scale(1.05);
+/* =========================================
+   2. NAVBAR (THANH ĐIỀU HƯỚNG)
+   ========================================= */
+.navbar { 
+  background: #fff; 
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+  padding: 0 40px; 
+  position: fixed; /* Cố định trên cùng */
+  top: 0; left: 0; 
+  width: 100%; 
+  z-index: 1000; 
+  height: 70px; 
+  display: flex; 
+  align-items: center; 
+  box-sizing: border-box;
 }
 
+.nav-container { display: flex; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto; align-items: center; }
+.nav-logo { display: flex; align-items: center; text-decoration: none; color: #b90000; font-weight: 800; font-size: 20px; }
+.nav-logo img { height: 40px; margin-right: 10px; }
 
-.auth-container {
-  background: rgba(255, 255, 255, 0.85); 
-  width: 400px;
-  padding: 40px 40px 30px; 
-  border-radius: 20px; 
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); 
-  text-align: center;
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+/* Nút đăng nhập/đăng xuất trên Navbar */
+.btn-login { padding: 8px 20px; background: #b90000; color: white; border-radius: 20px; text-decoration: none; font-weight: bold; }
+.auth-logged { display: flex; align-items: center; gap: 10px; color: #b90000; font-weight: bold; }
+.btn-logout { border: none; background: none; color: #666; cursor: pointer; font-size: 18px; }
+
+/* =========================================
+   3. HOME PAGE STYLES
+   ========================================= */
+.home-page { 
+  padding-top: 70px; 
+  width: 100%; 
+  min-height: 100vh; 
+  background: transparent; /* Dùng nền của body */
 }
 
-.hust-logo { width: 90px; margin-bottom: 15px; }
-
-
-.brand-title {
-  font-size: 32px;
-  font-weight: 800;
-  color: #b90000;
-  margin: 0 0 5px 0;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-}
-
-h2 { 
-  color: #333; 
-  margin-bottom: 30px; 
-  font-weight: 600; 
-  font-size: 18px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-
-.input-wrapper {
-  position: relative;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-
-.input-icon {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #888;
-  font-size: 18px;
-}
-
-
-.toggle-password {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #888;
-  cursor: pointer;
-  font-size: 18px;
-}
-.toggle-password:hover { color: #b90000; }
-
-
-.input-wrapper input {
+/* Dải đỏ Banner trên cùng */
+.hero-section { 
+  background: #b90000; 
+  color: white; 
+  text-align: center; 
+  padding: 30px 20px; 
   width: 100%;
-  padding: 14px 45px 14px 45px; 
-  border: 1px solid #e1e1e1;
-  border-radius: 50px; 
-  font-size: 15px;
-  background: #f9f9f9;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.hero-section h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Khung công cụ đặt vé (Tabs + Slider) */
+.booking-tool-container { 
+  max-width: 1100px; 
+  margin: -20px auto 40px; 
+  background: white; 
+  border-radius: 8px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+  overflow: hidden; 
+  position: relative; 
+  z-index: 10; 
+  padding-bottom: 30px; 
+}
+
+/* Tabs chọn Phim/Rạp */
+.booking-tabs { display: flex; border-bottom: 1px solid #eee; }
+.tab-btn { flex: 1; padding: 20px; background: #f8f8f8; border: none; font-weight: bold; font-size: 16px; cursor: pointer; color: #666; transition: 0.3s; }
+.tab-btn.active { background: white; color: #b90000; border-top: 3px solid #b90000; }
+
+.section-title { text-align: center; color: #333; margin: 30px 0; font-size: 24px; text-transform: uppercase; border-left: 5px solid #b90000; display: inline-block; padding-left: 15px; margin-left: 20px;}
+
+/* Slider Phim */
+.movie-slider-container { padding: 0 40px; }
+.movie-card { padding: 10px; text-align: center; outline: none; }
+.movie-img-wrapper { position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); height: 350px; }
+.movie-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+.movie-img-wrapper:hover img { transform: scale(1.1); filter: brightness(0.7); }
+
+/* Nút Mua vé (hiện khi hover) */
+.overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; }
+.movie-img-wrapper:hover .overlay { opacity: 1; }
+.btn-buy-ticket { background: #b90000; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transform: translateY(20px); transition: 0.3s; }
+.movie-img-wrapper:hover .btn-buy-ticket { transform: translateY(0); }
+
+.movie-title { font-size: 16px; margin: 15px 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333; font-weight: bold; }
+.movie-info { font-size: 13px; color: #888; }
+.slick-prev:before, .slick-next:before { color: #b90000 !important; font-size: 30px !important; }
+
+/* Phần Ưu Đãi (Coupon tại Home) */
+.promotion-section { max-width: 1000px; margin: 0 auto 60px; text-align: center; padding-bottom: 50px; }
+.promo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 0 20px; }
+
+/* =========================================
+   4. AUTH PAGE (LOGIN/REGISTER SPLIT SCREEN)
+   ========================================= */
+   
+/* Container chia đôi màn hình */
+.split-screen-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden; /* Khóa cuộn riêng cho trang Login để gọn */
+}
+
+/* --- PHẦN TRÁI (FORM) --- */
+.split-left {
+  flex: 1.5; /* Chiếm 60% */
+  background-color: #fdfbf7;
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  position: relative;
+  z-index: 2;
+  box-shadow: 5px 0 20px rgba(0,0,0,0.05);
+}
+
+/* Thẻ Card chứa Form */
+.login-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* --- PHẦN PHẢI (BANNER) --- */
+.split-right {
+  flex: 1; /* Chiếm 40% */
+  background: linear-gradient(135deg, #b90000 0%, #800000 100%);
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  position: relative;
+  overflow: hidden;
+}
+
+/* Họa tiết nền mờ */
+.split-right::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 30px 30px; pointer-events: none;
+}
+
+/* Wrapper cho slider bên phải */
+.promo-slider-wrapper { width: 100%; max-width: 380px; }
+
+/* --- CÁC THÀNH PHẦN CHUNG (LOGO, INPUT, BUTTON) --- */
+.hust-logo { width: 70px; margin-bottom: 10px; }
+.brand-title { font-size: 26px; font-weight: 800; color: #b90000; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
+
+/* Input Fields */
+.input-wrapper { position: relative; margin-bottom: 20px; width: 100%; }
+.input-wrapper input { 
+  width: 100%; 
+  padding: 14px 20px 14px 45px; /* Chừa chỗ cho icon */
+  border: 1px solid #eee; 
+  border-radius: 10px; 
+  font-size: 14px; 
+  background: #f9f9f9; 
+  transition: 0.3s; 
   box-sizing: border-box; 
 }
+.input-wrapper input:focus { border-color: #b90000; background: #fff; box-shadow: 0 0 0 4px rgba(185, 0, 0, 0.1); outline: none; }
 
-.input-wrapper input:focus {
-  border-color: #b90000;
-  background: #fff;
-  box-shadow: 0 4px 15px rgba(185, 0, 0, 0.15);
-  outline: none;
+/* Icons */
+.input-icon { 
+  position: absolute; left: 15px; top: 50%; transform: translateY(-50%); 
+  color: #bbb; font-size: 16px; pointer-events: none; 
+}
+.toggle-password { 
+  position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+  color: #bbb; cursor: pointer; 
 }
 
+/* Button Chính */
+.btn-primary { 
+  width: 100%; padding: 14px; 
+  background: #b90000; color: white; 
+  border: none; border-radius: 10px; 
+  font-size: 16px; font-weight: 700; 
+  cursor: pointer; transition: 0.3s; margin-top: 10px; 
+  box-shadow: 0 4px 15px rgba(185, 0, 0, 0.3); 
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(185, 0, 0, 0.4); }
 
-.btn-primary {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(45deg, #8f0000, #d60000); /* Gradient đỏ */
-  color: white;
-  border: none;
-  border-radius: 50px; 
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+.auth-link { margin-top: 20px; font-size: 13px; color: #666; }
+.auth-link a { color: #b90000; font-weight: 700; text-decoration: none; }
+
+/* --- STYLE THẺ COUPON (Dùng chung cho cả Home và Login) --- */
+.promo-card, .promo-card-login {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  position: relative;
   transition: 0.3s;
-  margin-top: 10px;
-  box-shadow: 0 5px 15px rgba(185, 0, 0, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(185, 0, 0, 0.4);
-  background: linear-gradient(45deg, #d60000, #ff1a1a);
-}
-
-
-.auth-options {
+  cursor: default;
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-  font-size: 13px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #b90000; /* Viền nét đứt */
+  box-shadow: 0 5px 15px rgba(185, 0, 0, 0.1);
 }
-.forgot-password { color: #666; text-decoration: none; }
-.forgot-password:hover { color: #b90000; text-decoration: underline; }
 
-.auth-link { margin-top: 25px; font-size: 14px; color: #555; }
-.auth-link a { color: #b90000; text-decoration: none; font-weight: 700; }
-.auth-link a:hover { text-decoration: underline; }
+/* Card riêng cho login thì shadow đậm hơn vì nền đỏ */
+.promo-card-login { 
+  margin: 15px; 
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+  text-align: center;
+}
+
+.promo-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(185, 0, 0, 0.2); background: #fff0f0; }
+
+.promo-percent { font-size: 48px; font-weight: 900; color: #b90000; line-height: 1; margin-bottom: 10px; margin-top: 10px; }
+.promo-title { font-size: 20px; font-weight: 700; color: #333; text-transform: uppercase; margin-bottom: 5px; }
+.promo-desc { font-size: 14px; color: #666; }
+.promo-tag { 
+  background: #b90000; color: white; 
+  padding: 5px 15px; border-radius: 20px; 
+  font-size: 12px; font-weight: bold; text-transform: uppercase; 
+  display: inline-block; margin-bottom: 5px;
+}
+.slick-dots li button:before { color: white !important; opacity: 0.5; }
+.slick-dots li.slick-active button:before { color: white !important; opacity: 1; }
