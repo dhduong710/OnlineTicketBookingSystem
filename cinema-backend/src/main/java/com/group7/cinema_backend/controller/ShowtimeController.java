@@ -35,7 +35,7 @@ public class ShowtimeController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         try {
-            // Gọi hàm tìm kiếm đã viết trong Repository ở bước trước
+            
             List<Showtime> showtimes = showtimeRepository.findShowtimesByMovieAndDate(movieId, date);
             return ResponseEntity.ok(showtimes);
         } catch (Exception e) {
@@ -43,31 +43,32 @@ public class ShowtimeController {
         }
     }
 
+
     @GetMapping("/{showtimeId}/seats")
     public ResponseEntity<List<SeatResponse>> getShowtimeSeats(@PathVariable Long showtimeId) {
-        // 1. Lấy thông tin suất chiếu để biết Phòng nào và Giá vé gốc
+        // 1. Lấy thông tin suất chiếu
         var showtime = showtimeRepository.findById(showtimeId)
                 .orElseThrow(() -> new RuntimeException("Showtime not found"));
         
-        // 2. Lấy tất cả ghế của phòng đó (Layout vật lý)
+        // 2. Lấy danh sách ghế của phòng
         List<Seat> allSeats = seatRepository.findByRoomIdOrderByRowAscColAsc(showtime.getRoom().getId());
 
-        // 3. Lấy tất cả vé đã bán của suất này (Ghế đã đặt)
-        List<Ticket> bookedTickets = ticketRepository.findByShowtimeId(showtimeId);
+        // 3. Lấy vé đã bán 
+        List<Ticket> bookedTickets = ticketRepository.findTicketsByShowtimeId(showtimeId);
+        
+
         List<Long> bookedSeatIds = bookedTickets.stream()
                 .map(ticket -> ticket.getSeat().getId())
                 .toList();
 
-        // 4. Giá vé cơ bản 
-        // 2D = 50k, 3D = 80k. VIP + 20k.
         double basePrice = showtime.getFormat().equals("3D") || showtime.getFormat().contains("IMAX") ? 80000 : 50000;
 
-        // 5. Map sang DTO để trả về Frontend
         List<SeatResponse> response = allSeats.stream().map(seat -> {
             boolean isBooked = bookedSeatIds.contains(seat.getId());
+
             double seatPrice = basePrice;
             if (seat.getType().equals("VIP")) {
-                seatPrice += 20000; // Phụ thu ghế VIP
+                seatPrice += 20000;
             }
             
             return new SeatResponse(
@@ -76,7 +77,7 @@ public class ShowtimeController {
                 seat.getRow(),
                 seat.getCol(),
                 seat.getType(),
-                isBooked,
+                isBooked, 
                 seatPrice
             );
         }).collect(Collectors.toList());

@@ -7,10 +7,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class SeatResponse {
     private Long id;
-    private String name; // A1, A2
-    private String row;  // A
-    private int col;     // 1
-    private String type; // NORMAL, VIP
-    private boolean isBooked; // true nếu đã có người đặt
-    private double price; // Giá tiền của ghế này
+    private String name; 
+    private String row;  
+    private int col;     
+    private String type; 
+    
+    private boolean booked; 
+    
+    private double price; 
 }
