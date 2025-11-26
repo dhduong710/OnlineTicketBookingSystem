@@ -80,8 +80,8 @@ function BookingPage() {
             toast.info("Vui lòng đăng nhập để chọn ghế!");
             navigate("/login");
         } else {
-            toast.success(`Đang chuyển đến chọn ghế... ID: ${showtimeId}`);
-            // navigate(`/seat-selection/${showtimeId}`);
+            // Chuyển sang trang chọn ghế
+            navigate(`/seat-selection/${showtimeId}`);
         }
     };
 
