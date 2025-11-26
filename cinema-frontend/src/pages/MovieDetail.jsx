@@ -19,15 +19,9 @@ function MovieDetail() {
     }, [id]);
 
     const handleBuyTicket = () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            toast.info("Vui lòng đăng nhập để mua vé!");
-            navigate("/login");
-        } else {
-            // Logic chuyển sang trang chọn suất chiếu (Làm ở bước sau)
-            toast.success("Chuyển đến trang chọn suất chiếu...");
-        }
-    };
+
+     navigate(`/booking/${id}`);
+};
 
     // Hàm chuyển đổi link Youtube thường thành link Embed để chạy được trên web
     const getYoutubeEmbedUrl = (url) => {
@@ -58,7 +52,6 @@ function MovieDetail() {
                             <div className="meta-item"><FaCalendarAlt className="icon"/> Đang chiếu</div>
                         </div>
 
-                        {/* Vì database chưa có bảng Genre/Director nên tạm ẩn */}
                         <div className="detail-description">
                             <p><strong>Đạo diễn:</strong> (Đang cập nhật)</p>
                             <p><strong>Diễn viên:</strong> (Đang cập nhật)</p>
