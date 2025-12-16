@@ -826,3 +826,48 @@ h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* --- PAYMENT PAGE --- */
+.payment-page { padding-top: 80px; background: #fdfbf7; min-height: 100vh; }
+.payment-container { 
+    max-width: 1100px; margin: 0 auto; display: flex; gap: 30px; padding: 20px; 
+}
+
+/* Cột trái: Bắp nước */
+.left-col { flex: 1.5; }
+.product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.product-card { 
+    background: white; padding: 15px; border-radius: 12px; text-align: center; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;
+}
+.product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.product-card img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; }
+.qty-control { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
+.qty-control button { 
+    width: 30px; height: 30px; border: 1px solid #ddd; background: #fff; 
+    border-radius: 50%; cursor: pointer; font-weight: bold; 
+}
+.qty-control button:hover { background: #b90000; color: white; border-color: #b90000; }
+
+/* Cột phải: Thanh toán */
+.right-col { flex: 1; }
+.summary-card { 
+    background: white; padding: 30px; border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #b90000;
+}
+.summary-card h3 { margin-top: 0; color: #b90000; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.sum-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #555; }
+.divider { height: 1px; background: #eee; margin: 15px 0; }
+.total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; color: #333; }
+.price-tag { color: #b90000; font-size: 24px; }
+
+.qr-section { text-align: center; margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; }
+.qr-img { width: 200px; mix-blend-mode: multiply; }
+.bank-info { margin: 5px 0; font-weight: bold; color: #333; font-size: 14px; }
+
+.btn-pay-confirm { 
+    width: 100%; padding: 15px; background: #27ae60; color: white; 
+    border: none; border-radius: 8px; font-size: 16px; font-weight: bold; 
+    margin-top: 20px; cursor: pointer; transition: 0.3s; 
+}
+.btn-pay-confirm:hover { background: #219150; transform: scale(1.02); }

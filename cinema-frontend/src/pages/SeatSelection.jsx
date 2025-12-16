@@ -15,8 +15,6 @@ function SeatSelection() {
     const [totalPrice, setTotalPrice] = useState(0);
     const [loading, setLoading] = useState(true);
     
-    // State: Quản lý ẩn/hiện Modal xác nhận
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     // 1. Load sơ đồ ghế từ API
     useEffect(() => {
@@ -27,7 +25,6 @@ function SeatSelection() {
             return;
         }
 
-        // Gọi API lấy ghế của suất chiếu này
         axios.get(`http://localhost:8080/api/showtimes/${showtimeId}/seats`)
             .then(res => {
                 setSeats(res.data);
@@ -42,67 +39,38 @@ function SeatSelection() {
 
     // 2. Xử lý logic chọn/bỏ chọn ghế
     const handleSeatClick = (seat) => {
-        if (seat.booked) return; // Ghế đã đặt thì không làm gì
+        if (seat.booked) return; 
 
         const isSelected = selectedSeats.find(s => s.id === seat.id);
 
         if (isSelected) {
-            // Nếu đang chọn -> Bỏ chọn (Trừ tiền)
             const newList = selectedSeats.filter(s => s.id !== seat.id);
             setSelectedSeats(newList);
             setTotalPrice(prev => prev - seat.price);
         } else {
-            // Nếu chưa chọn -> Thêm vào (Cộng tiền)
             setSelectedSeats([...selectedSeats, seat]);
             setTotalPrice(prev => prev + seat.price);
         }
     };
 
-    // 3. Bước đệm: Kiểm tra và mở Modal xác nhận
-    const handlePreBooking = () => {
+    // 3. Chuyển sang trang Payment
+    const handleContinue = () => {
         if (selectedSeats.length === 0) {
-            toast.warning("Bạn chưa chọn ghế nào!");
+            toast.warning("Vui lòng chọn ghế trước khi tiếp tục!");
             return;
         }
-        
-        setShowConfirmModal(true);
-    };
 
-    // 4. Xử lý thanh toán chính thức (Gọi API)
-    const handleFinalPayment = async () => {
-        // Đóng modal trước
-        setShowConfirmModal(false);
-
-        try {
-            const token = localStorage.getItem("token");
-            
-            const payload = {
-                showtimeId: Number(showtimeId),
-                seatIds: selectedSeats.map(seat => seat.id)
-            };
-
-            // Gọi API Booking
-            await axios.post("http://localhost:8080/api/bookings", payload, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            // Thành công
-            toast.success("Đặt vé thành công!");
-            navigate("/"); // Về trang chủ
-
-        } catch (error) {
-            console.error(error);
-            const errorMsg = error.response?.data || "Đặt vé thất bại. Vui lòng thử lại!";
-            toast.error(errorMsg);
-            
-            // Nếu lỗi 400 (thường là do ghế vừa bị người khác đặt), load lại trang
-            if (error.response?.status === 400) {
-                setTimeout(() => window.location.reload(), 2000);
+        // Chuyển hướng sang trang /payment và mang theo dữ liệu
+        navigate("/payment", {
+            state: {
+                showtimeId: showtimeId,
+                selectedSeats: selectedSeats,
+                ticketPrice: totalPrice // Tổng tiền vé tính đến lúc này
             }
-        }
+        });
     };
 
-    // Xử lý dữ liệu để vẽ sơ đồ (Group theo hàng A, B, C...)
+    // Xử lý dữ liệu để vẽ sơ đồ
     const seatsByRow = seats.reduce((acc, seat) => {
         if (!acc[seat.row]) acc[seat.row] = [];
         acc[seat.row].push(seat);
@@ -110,7 +78,6 @@ function SeatSelection() {
     }, {});
     const sortedRows = Object.keys(seatsByRow).sort();
 
-    // Màn hình loading
     if (loading) return (
         <div style={{textAlign:'center', marginTop:'100px', color: '#666'}}>
             <h3>Đang tải sơ đồ ghế...</h3>
@@ -122,7 +89,6 @@ function SeatSelection() {
             <Navbar />
             
             <div className="seat-container">
-                {/* Màn hình hiển thị */}
                 <h2 className="screen-title">MÀN HÌNH</h2>
                 <div className="screen-display"></div>
 
@@ -135,7 +101,6 @@ function SeatSelection() {
                                 {seatsByRow[row].map(seat => {
                                     const isSelected = selectedSeats.find(s => s.id === seat.id);
                                     
-                                    // Xác định class cho từng loại ghế
                                     let seatClass = "seat-item";
                                     if (seat.booked) seatClass += " booked";
                                     else if (isSelected) seatClass += " selected";
@@ -159,7 +124,6 @@ function SeatSelection() {
                     ))}
                 </div>
 
-
                 <div className="seat-legend">
                     <div className="legend-item"><span className="seat-dot standard"></span>Thường</div>
                     <div className="legend-item"><span className="seat-dot vip"></span>VIP</div>
@@ -173,61 +137,15 @@ function SeatSelection() {
                 <div className="footer-content">
                     <div className="total-info">
                         <p>Ghế đang chọn: <b>{selectedSeats.length > 0 ? selectedSeats.map(s => s.name).join(", ") : "Chưa chọn"}</b></p>
-                        <p className="total-price">Tổng tiền: {totalPrice.toLocaleString()} VND</p>
+                        <p className="total-price">Tạm tính: {totalPrice.toLocaleString()} VND</p>
                     </div>
          
-                    {/* Nút bấm gọi Modal */}
-                    <button className="btn-continue" onClick={handlePreBooking}>
-                        THANH TOÁN NGAY
+                    <button className="btn-continue" onClick={handleContinue}>
+                        TIẾP TỤC
                     </button>
                 </div>
             </div>
 
-            {/* --- CUSTOM CONFIRM MODAL --- */}
-            {showConfirmModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h3>Xác nhận thanh toán</h3>
-                        </div>
-                        
-                        <div className="modal-body">
-                            <p>Vui lòng kiểm tra kỹ thông tin vé trước khi đặt.</p>
-                            
-                            <div className="modal-info">
-                                <div>
-                                    <span>Số lượng ghế:</span>
-                                    <span className="highlight">{selectedSeats.length} vé</span>
-                                </div>
-                                <div>
-                                    <span>Vị trí ghế:</span>
-                                    <span className="highlight">{selectedSeats.map(s => s.name).join(', ')}</span>
-                                </div>
-                                <hr style={{margin: '10px 0', border: 'none', borderTop: '1px dashed #ddd'}}/>
-                                <div>
-                                    <span>Tổng tiền:</span>
-                                    <span className="price">{totalPrice.toLocaleString()} đ</span>
-                                </div>
-                            </div>
-
-                            <div className="modal-actions">
-                                <button 
-                                    className="btn-cancel" 
-                                    onClick={() => setShowConfirmModal(false)}
-                                >
-                                    Quay lại
-                                </button>
-                                <button 
-                                    className="btn-confirm" 
-                                    onClick={handleFinalPayment}
-                                >
-                                    Xác nhận & Đặt vé
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

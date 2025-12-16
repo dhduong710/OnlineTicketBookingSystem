@@ -7,4 +7,12 @@ import java.util.List;
 public class BookingRequest {
     private Long showtimeId;      // Đặt cho suất chiếu nào
     private List<Long> seatIds;   // Danh sách ID các ghế muốn đặt
+
+    private List<ProductOrder> products;
+
+    @Data
+    public static class ProductOrder {
+        private Long productId;
+        private int quantity;
+    }
 }
