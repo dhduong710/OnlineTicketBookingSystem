@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BookingPage from './pages/BookingPage';
 import SeatSelection from './pages/SeatSelection';
+import PaymentPage from './pages/PaymentPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/movie/:id" element={<MovieDetail />} /> 
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/seat-selection/:showtimeId" element={<SeatSelection />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
     </BrowserRouter>
   );
