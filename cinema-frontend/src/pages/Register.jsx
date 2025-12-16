@@ -71,18 +71,18 @@ function Register() {
                     <Slider {...sliderSettings}>
                         <div className="p-4">
                             <div className="promo-card-login">
-                                <span className="promo-tag">WELCOME</span>
-                                <div className="promo-percent">MEMBER</div>
-                                <h3 className="promo-title">THÀNH VIÊN MỚI</h3>
-                                <p className="promo-desc">Đăng ký ngay để tích điểm đổi quà</p>
+                                <span className="promo-tag">HOT DEAL</span>
+                                <div className="promo-percent">10% OFF</div>
+                                <h3 className="promo-title">HAPPY TUESDAY</h3>
+                                <p className="promo-desc">Giảm giá tất cả vé vào Thứ 3 hàng tuần</p>
                             </div>
                         </div>
                         <div className="p-4">
                             <div className="promo-card-login">
-                                <span className="promo-tag">STUDENT</span>
-                                <div className="promo-percent">FREE</div>
-                                <h3 className="promo-title">BẮP NGỌT</h3>
-                                <p className="promo-desc">Tặng 1 bắp cho thẻ sinh viên HUST</p>
+                                <span className="promo-tag">GROUP SALE</span>
+                                <div className="promo-percent">10% OFF</div>
+                                <h3 className="promo-title">MUA NHIỀU GIẢM SÂU</h3>
+                                <p className="promo-desc">Giảm ngay khi đặt từ 5 vé trở lên</p>
                             </div>
                         </div>
                     </Slider>
