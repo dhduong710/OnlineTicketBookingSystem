@@ -90,7 +90,7 @@ function PaymentPage() {
             <div className="payment-container">
                 {/* CỘT TRÁI: CHỌN BẮP NƯỚC */}
                 <div className="left-col">
-                    <h2 className="section-title">CHỌN COMBO ƯU ĐÃI</h2>
+                    <h2 className="section-title">CHỌN Bắp - Nước</h2>
                     <div className="product-list">
                         {products.map(p => (
                             <div key={p.id} className="product-card">

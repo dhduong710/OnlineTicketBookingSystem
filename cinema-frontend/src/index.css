@@ -866,8 +866,22 @@ h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
 .bank-info { margin: 5px 0; font-weight: bold; color: #333; font-size: 14px; }
 
 .btn-pay-confirm { 
-    width: 100%; padding: 15px; background: #27ae60; color: white; 
-    border: none; border-radius: 8px; font-size: 16px; font-weight: bold; 
-    margin-top: 20px; cursor: pointer; transition: 0.3s; 
+    width: 100%; 
+    padding: 15px; 
+    background: #b90000; 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    font-size: 16px; 
+    font-weight: bold; 
+    margin-top: 20px; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    box-shadow: 0 4px 10px rgba(185, 0, 0, 0.3); 
 }
-.btn-pay-confirm:hover { background: #219150; transform: scale(1.02); }
+
+.btn-pay-confirm:hover { 
+    background: #900000; 
+    transform: scale(1.02); 
+    box-shadow: 0 6px 15px rgba(185, 0, 0, 0.4);
+}
