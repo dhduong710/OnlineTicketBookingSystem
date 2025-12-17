@@ -90,7 +90,7 @@ function PaymentPage() {
             <div className="payment-container">
                 {/* CỘT TRÁI: CHỌN BẮP NƯỚC */}
                 <div className="left-col">
-                    <h2 className="section-title">CHỌN COMBO ƯU ĐÃI</h2>
+                    <h2 className="section-title">CHỌN Bắp - Nước</h2>
                     <div className="product-list">
                         {products.map(p => (
                             <div key={p.id} className="product-card">
@@ -135,7 +135,7 @@ function PaymentPage() {
                             <img 
                                 src={`https://img.vietqr.io/image/MB-0969696969-compact.png?amount=${totalAmount}&addInfo=HUST%20Cinema%20Booking&accountName=HUST%20CINEMA`} 
                                 alt="VietQR" 
-                                className="qr-img"
+                                className="qr-img-pay"
                             />
                             <p className="bank-info">MB Bank: 0969 6969 69</p>
                             <p className="bank-info">Chủ TK: HUST CINEMA</p>

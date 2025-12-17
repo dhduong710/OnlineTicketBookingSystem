@@ -1,5 +1,7 @@
 package com.group7.cinema_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +34,7 @@ public class Ticket {
     // Vé thuộc về đơn hàng nào 
     @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
+    @JsonBackReference
     private Booking booking;
     
 }

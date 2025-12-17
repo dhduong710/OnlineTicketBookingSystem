@@ -8,6 +8,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference; 
+import java.util.List;
+
 @Entity
 @Table(name = "booking")
 @Getter
@@ -39,4 +42,12 @@ public class Booking {
 
     @Column(name = "payment_status")
     private String paymentStatus; // "PENDING" (Chờ thanh toán), "PAID" (Đã trả), "CANCELLED"
+
+    @OneToMany(mappedBy = "booking")
+    @JsonManagedReference 
+    private List<Ticket> tickets;
+
+    @OneToMany(mappedBy = "booking")
+    @JsonManagedReference
+    private List<Inclusion> inclusions;
 }

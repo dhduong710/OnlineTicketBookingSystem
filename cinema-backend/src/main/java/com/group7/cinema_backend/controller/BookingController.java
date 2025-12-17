@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+import com.group7.cinema_backend.repository.BookingRepository;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class BookingController {
 
     private final BookingService bookingService;
+
+    private final BookingRepository bookingRepository;
 
     @PostMapping
     public ResponseEntity<?> createBooking(@RequestBody BookingRequest request, Authentication authentication) {
@@ -27,5 +32,12 @@ public class BookingController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/my-bookings")
+    public ResponseEntity<List<Booking>> getMyBookings(Authentication authentication) {
+        String email = authentication.getName(); 
+        List<Booking> bookings = bookingRepository.findByCustomer_EmailOrderByBookingTimeDesc(email);
+        return ResponseEntity.ok(bookings);
     }
 }
