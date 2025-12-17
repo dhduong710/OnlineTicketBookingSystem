@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import BookingPage from './pages/BookingPage';
 import SeatSelection from './pages/SeatSelection';
 import PaymentPage from './pages/PaymentPage';
+import MyTickets from './pages/MyTickets';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/seat-selection/:showtimeId" element={<SeatSelection />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/my-tickets" element={<MyTickets />} />
       </Routes>
     </BrowserRouter>
   );
