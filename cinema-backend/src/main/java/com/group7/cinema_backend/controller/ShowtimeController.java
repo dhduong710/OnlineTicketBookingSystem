@@ -84,4 +84,14 @@ public class ShowtimeController {
 
         return ResponseEntity.ok(response);
     }
+
+    // API: Lấy danh sách suất chiếu theo Rạp và Ngày
+    // URL ví dụ: /api/showtimes/cinema?cinemaId=1&date=2025-12-25
+    @GetMapping("/cinema")
+    public ResponseEntity<List<Showtime>> getShowtimesByCinema(
+        @RequestParam Long cinemaId,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return ResponseEntity.ok(showtimeRepository.findShowtimesByCinemaAndDate(cinemaId, date));
+    }
 }

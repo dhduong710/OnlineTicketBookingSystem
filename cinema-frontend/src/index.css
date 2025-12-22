@@ -971,3 +971,309 @@ h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
   background: #b90000; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; 
 }
 
+/* =========================================
+   5. CINEMA BOOKING PAGE 
+   ========================================= */
+
+.cinema-movie-row {
+    display: flex;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+    border-bottom: 3px solid #f0f0f0;
+}
+
+.mv-poster {
+    width: 150px;
+    flex-shrink: 0;
+    margin-right: 25px;
+}
+.mv-poster img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.mv-details {
+    flex: 1;
+}
+
+.mv-title {
+    margin: 0 0 5px;
+    font-size: 20px;
+    color: #333;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+}
+
+.age-tag {
+    background: #eab308; 
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+.mv-meta {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.format-row {
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 10px;
+}
+.format-row:last-child { border-bottom: none; }
+
+.fmt-label {
+    font-weight: bold;
+    color: #b90000;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.time-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 600px) {
+    .cinema-movie-row { flex-direction: column; }
+    .mv-poster { width: 120px; margin-bottom: 15px; }
+}
+
+/* =========================================
+   6. CINEMA LISTING PAGE 
+   ========================================= */
+
+/* --- 6.1 Home Page (Cinema Grid) --- */
+
+.city-tabs-clean {
+    display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;
+    border-bottom: 1px solid #eee; padding-bottom: 15px;
+}
+.city-btn-clean {
+    border: none; padding: 8px 25px; font-size: 15px; font-weight: 600; color: #888;
+    cursor: pointer; background: transparent; border-radius: 20px; transition: 0.3s;
+}
+.city-btn-clean:hover { color: #b90000; background: #fff5f5; }
+.city-btn-clean.active { background: #b90000; color: white; box-shadow: 0 3px 8px rgba(185, 0, 0, 0.2); }
+
+/* GRID 3 CỘT - FORM DỌC */
+.cinema-grid-vertical {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 rạp 1 hàng */
+    gap: 30px; 
+    padding: 0 40px;
+}
+
+/* CARD RẠP DỌC */
+.cinema-card-vertical {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+}
+
+/* Hover effect */
+.cinema-card-vertical:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    border-color: #eee;
+}
+
+/* PHẦN ẢNH */
+.card-img-container {
+    width: 100%;
+    height: 280px; 
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    transition: transform 0.5s ease;
+}
+
+.cinema-card-vertical:hover .card-img-container img {
+    transform: scale(1.1);
+}
+
+.card-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: 0.3s;
+}
+
+.cinema-card-vertical:hover .card-overlay { opacity: 1; }
+
+.btn-view {
+    color: white; border: 1px solid white; padding: 10px 25px;
+    border-radius: 25px; font-size: 13px; font-weight: bold;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+    text-transform: uppercase;
+}
+
+/* PHẦN THÔNG TIN */
+.card-info-vertical {
+    padding: 20px;
+    flex: 1;
+    display: flex; flex-direction: column; justify-content: flex-start;
+    text-align: left;
+    background: #fff;
+}
+
+.cinema-name-vertical {
+    margin: 0 0 10px;
+    font-size: 18px; 
+    font-weight: 800;
+    color: #333;
+    text-transform: uppercase;
+    line-height: 1.3;
+}
+
+.cinema-card-vertical:hover .cinema-name-vertical {
+    color: #b90000; 
+}
+
+.cinema-addr-vertical {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Số dòng tối đa */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex; 
+}
+
+/* Responsive */
+@media (max-width: 1024px) { .cinema-grid-vertical { grid-template-columns: repeat(2, 1fr); padding: 0 20px; } }
+@media (max-width: 600px) { .cinema-grid-vertical { grid-template-columns: 1fr; padding: 0 10px; } }
+
+
+/* --- 6.2 Cinema Booking Page --- */
+
+.cinema-movie-row-styled {
+    display: flex; 
+    background: white; 
+    padding: 20px; 
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    margin-bottom: 20px; 
+    border: 1px solid #f0f0f0;
+    transition: transform 0.2s ease;
+}
+
+.cinema-movie-row-styled:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.mv-poster-container-styled {
+    width: 180px; 
+    flex-shrink: 0; 
+    margin-right: 30px; 
+    border-radius: 8px;
+    overflow: hidden; 
+    background: #000; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.mv-poster-container-styled img { 
+    width: 100%; 
+    height: auto; 
+    display: block; 
+}
+
+.mv-details-styled { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.mv-title-styled { 
+    font-size: 24px; 
+    margin: 0 0 10px; 
+    font-weight: 800; 
+    color: #222; 
+    text-transform: uppercase; 
+}
+
+.mv-meta-styled { 
+    font-size: 14px; 
+    color: #666; 
+    margin-bottom: 20px; 
+    display: flex; 
+    align-items: center; 
+    font-weight: 500; 
+}
+
+.format-row-styled { 
+    margin-bottom: 15px; 
+    padding-left: 15px; 
+    border-left: 3px solid #b90000; 
+}
+
+.fmt-label-styled { 
+    font-size: 16px; 
+    font-weight: 700; 
+    color: #333; 
+    margin-bottom: 8px; 
+    display: block; 
+}
+
+.time-list-styled { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 12px; 
+}
+
+.time-btn-styled {
+    padding: 10px 20px; 
+    background: #fff; 
+    border: 1px solid #ddd; 
+    border-radius: 6px;
+    font-size: 16px; 
+    font-weight: 600; 
+    color: #333; 
+    min-width: 80px; 
+    transition: 0.2s; 
+    cursor: pointer;
+}
+
+.time-btn-styled:hover {
+    border-color: #b90000; 
+    background: #b90000; 
+    color: white;
+    box-shadow: 0 4px 10px rgba(185,0,0,0.2); 
+    transform: translateY(-2px);
+}
+
+/* Thêm trạng thái Active (khi đã chọn giờ) */
+.time-btn-styled.active {
+    background: #b90000;
+    color: white;
+    border-color: #b90000;
+}

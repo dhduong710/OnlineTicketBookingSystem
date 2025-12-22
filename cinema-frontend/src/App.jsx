@@ -10,6 +10,11 @@ import SeatSelection from './pages/SeatSelection';
 import PaymentPage from './pages/PaymentPage';
 import MyTickets from './pages/MyTickets';
 
+import "slick-carousel/slick/slick-theme.css";
+
+
+import CinemaBookingPage from './pages/CinemaBookingPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +28,9 @@ function App() {
         <Route path="/seat-selection/:showtimeId" element={<SeatSelection />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/my-tickets" element={<MyTickets />} />
+
+        <Route path="/cinema-booking/:cinemaId" element={<CinemaBookingPage />} />
+
       </Routes>
     </BrowserRouter>
   );

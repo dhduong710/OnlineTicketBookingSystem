@@ -24,4 +24,10 @@ public class Cinema {
 
     @Column(nullable = false)
     private String city; 
+    
+    @Column(name = "image_url")
+    private String imageUrl; 
+    
+    @Column(name = "address")
+    private String address; 
 }
