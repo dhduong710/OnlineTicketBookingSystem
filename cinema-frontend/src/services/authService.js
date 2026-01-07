@@ -2,10 +2,10 @@ import axios from 'axios';
 
 const API_URL = "http://localhost:8080/api/auth"; 
 
-export const loginUser = async (username, password) => {
+export const loginUser = async (identifier, password) => {
     try {
-        const response = await axios.post(`${API_URL}/login`, { username, password });
-        // Nếu đăng nhập thành công, lưu Token vào bộ nhớ trình duyệt
+        // Gửi identifier (email hoặc sdt) thay vì chỉ email
+        const response = await axios.post(`${API_URL}/login`, { identifier, password });
         if (response.data.token) {
             localStorage.setItem("token", response.data.token);
         }

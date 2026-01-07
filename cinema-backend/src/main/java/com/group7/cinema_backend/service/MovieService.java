@@ -20,4 +20,14 @@ public class MovieService {
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
     }
+
+    /**
+     * Lấy phim theo ID
+     * @param id ID phim
+     * @return Movie
+     */
+    public Movie getMovieById(Long id) {
+        return movieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+    }
 }

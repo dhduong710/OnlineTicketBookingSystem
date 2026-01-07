@@ -40,13 +40,14 @@ public class AuthenticationService {
         // Xác thực qua Spring Security
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(), // Dùng email để đăng nhập
+                        request.getIdentifier(), // Email hoặc số điện thoại
                         request.getPassword()
                 )
         );
 
-        // Tìm user trong DB
-        var user = customerRepository.findByEmail(request.getEmail())
+        // Tìm user trong DB bằng email hoặc sdt
+        var user = customerRepository.findByEmail(request.getIdentifier())
+                .or(() -> customerRepository.findByPhone(request.getIdentifier()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Tạo Token

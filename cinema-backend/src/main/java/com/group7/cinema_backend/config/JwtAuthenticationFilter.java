@@ -31,45 +31,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1. Lấy token từ header "Authorization"
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
-        // Nếu không có header hoặc header không bắt đầu bằng "Bearer " -> Cho qua (để các filter sau xử lý)
+        // 1. Nếu không có token, cho qua (để vào các API public)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. Cắt bỏ chữ "Bearer " để lấy token gốc
         jwt = authHeader.substring(7);
         
-        // 3. Trích xuất email từ token
         try {
-            userEmail = jwtService.extractUsername(jwt); 
-        } catch (Exception e) {
-             filterChain.doFilter(request, response);
-             return;
-        }
-
-        // 4. Nếu có email và chưa được xác thực trong SecurityContext
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            // 5. Kiểm tra token có hợp lệ với user này không
-            if (jwtService.isTokenValid(jwt, userDetails)) { 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            userEmail = jwtService.extractUsername(jwt);
+            
+            // 2. Nếu lấy được email và chưa xác thực
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 
-                // 6. Lưu thông tin user vào Context (Đã đăng nhập thành công)
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                // --- THÊM TRY-CATCH TẠI ĐÂY ---
+                try {
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+                    if (jwtService.isTokenValid(jwt, userDetails)) {
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
+                } catch (Exception e) {
+                    // Nếu không tìm thấy User (do DB reset) hoặc lỗi khác:
+                    // Ta KHÔNG làm gì cả, cứ để filterChain chạy tiếp.
+                    // Spring Security sẽ tự chặn ở các endpoint cần quyền sau.
+                    System.out.println("Token invalid or User not found: " + e.getMessage());
+                }
             }
+        } catch (Exception e) {
+            // Lỗi extract token cũng cho qua luôn
         }
+
         filterChain.doFilter(request, response);
     }
 }

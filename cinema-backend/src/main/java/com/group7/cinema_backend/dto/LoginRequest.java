@@ -3,6 +3,6 @@ import lombok.Data;
 
 @Data
 public class LoginRequest {
-    private String email;    // Customer đăng nhập bằng Email
+    private String identifier;  // Email hoặc số điện thoại
     private String password; 
 }

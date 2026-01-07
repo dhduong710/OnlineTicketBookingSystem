@@ -2,6 +2,7 @@ package com.group7.cinema_backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ public class Movie {
     private String trailerUrl;
 
     @Column(name = "release_date")
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate releaseDate;
 
     // Quan hệ Many-to-Many

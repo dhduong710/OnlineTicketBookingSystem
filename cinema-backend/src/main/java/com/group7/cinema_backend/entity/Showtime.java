@@ -2,6 +2,7 @@ package com.group7.cinema_backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -17,9 +18,11 @@ public class Showtime {
     private String format; // 2D, 3D
 
     @Column(name = "start_time", nullable = false)
+    @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalTime startTime;
 
     @Column(name = "show_date", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate showDate;
 
     @ManyToOne

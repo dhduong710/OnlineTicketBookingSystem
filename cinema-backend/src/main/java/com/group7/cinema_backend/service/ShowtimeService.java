@@ -30,6 +30,13 @@ public class ShowtimeService {
     }
 
     /**
+     * Lấy danh sách suất chiếu theo Rạp và Ngày
+     */
+    public List<Showtime> getShowtimesByCinema(Long cinemaId, LocalDate date) {
+        return showtimeRepository.findShowtimesByCinemaAndDate(cinemaId, date);
+    }
+
+    /**
      * Lấy danh sách ghế của một suất chiếu, chuyển thành SeatResponse DTO
      * @param showtimeId ID của suất chiếu
      * @return Danh sách SeatResponse (kèm trạng thái và giá)

@@ -9,7 +9,7 @@ import { FaUser, FaLock } from 'react-icons/fa';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
 function Login() {
-    const [identifier, setIdentifier] = useState('');
+    const [identifier, setIdentifier] = useState(''); // Email
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
@@ -17,11 +17,17 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            await loginUser(identifier, password);
+            // identifier có thể là email hoặc số điện thoại
+            const data = await loginUser(identifier, password);
+            
+            // Lưu thông tin user để Navbar hiển thị
+            const userStore = { username: identifier };
+            localStorage.setItem("user", JSON.stringify(userStore));
+
             toast.success("Đăng nhập thành công!");
             navigate('/'); 
         } catch (error) {
-            toast.error("Lỗi: " + (error.message || "Sai thông tin"));
+            toast.error("Lỗi: " + (error.message || "Sai thông tin đăng nhập"));
         }
     };
 
@@ -29,7 +35,7 @@ function Login() {
 
     return (
         <div className="split-screen-container">
-            {/* TRÁI: FORM (Chiếm 60%) */}
+            {/* TRÁI: FORM */}
             <div className="split-left">
                 <div className="login-card">
                     <img src="/logo.png" alt="HUST Logo" className="hust-logo" />
@@ -39,7 +45,7 @@ function Login() {
                     <form onSubmit={handleLogin}>
                         <div className="input-wrapper">
                             <FaUser className="input-icon" />
-                            <input type="text" placeholder="Email hoặc SĐT" value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
+                            <input type="text" placeholder="Email hoặc số điện thoại" value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
                         </div>
                         <div className="input-wrapper">
                             <FaLock className="input-icon" />
@@ -57,26 +63,13 @@ function Login() {
                 </div>
             </div>
 
-            {/* PHẢI: BANNER (Chiếm 40% ) */}
+            {/* PHẢI: BANNER */}
             <div className="split-right">
                 <div className="promo-slider-wrapper">
                     <Slider {...sliderSettings}>
-                        <div className="p-4">
-                            <div className="promo-card-login">
-                                <span className="promo-tag">HOT DEAL</span>
-                                <div className="promo-percent">10% OFF</div>
-                                <h3 className="promo-title">HAPPY TUESDAY</h3>
-                                <p className="promo-desc">Giảm giá tất cả vé vào Thứ 3 hàng tuần</p>
-                            </div>
-                        </div>
-                        <div className="p-4">
-                            <div className="promo-card-login">
-                                <span className="promo-tag">GROUP SALE</span>
-                                <div className="promo-percent">10% OFF</div>
-                                <h3 className="promo-title">MUA NHIỀU GIẢM SÂU</h3>
-                                <p className="promo-desc">Ưu đãi khi đặt từ 5 vé trở lên</p>
-                            </div>
-                        </div>
+                        {/* Nội dung Slider giữ nguyên */}
+                         <div className="p-4"><div className="promo-card-login"><span className="promo-tag">HOT DEAL</span><div className="promo-percent">10% OFF</div><h3 className="promo-title">HAPPY TUESDAY</h3><p className="promo-desc">Giảm giá tất cả vé vào Thứ 3 hàng tuần</p></div></div>
+                         <div className="p-4"><div className="promo-card-login"><span className="promo-tag">GROUP SALE</span><div className="promo-percent">10% OFF</div><h3 className="promo-title">MUA NHIỀU GIẢM SÂU</h3><p className="promo-desc">Ưu đãi khi đặt từ 5 vé trở lên</p></div></div>
                     </Slider>
                 </div>
             </div>

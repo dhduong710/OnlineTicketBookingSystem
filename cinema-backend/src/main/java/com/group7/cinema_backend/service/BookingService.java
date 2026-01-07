@@ -48,7 +48,7 @@ public class BookingService {
 
         // 3. TÍNH TIỀN VÉ
         double totalTicketPrice = 0;
-        double basePrice = is3DMovie(showtime.getFormat()) ? 80000 : 50000;
+        double basePrice = is3DMovie(showtime.getFormat()) ? 70000 : 50000;
 
         for (ShowSeat seat : selectedSeats) {
             // Logic giá: Giá gốc (Có thể mở rộng logic VIP ở đây nếu SeatTemplate có field Type)

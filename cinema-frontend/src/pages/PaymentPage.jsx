@@ -8,29 +8,28 @@ function PaymentPage() {
     const location = useLocation();
     const navigate = useNavigate();
     
-    // Lấy dữ liệu từ trang chọn ghế truyền sang
+    // selectedSeats bây giờ chứa các object ShowSeat (có id, price, status...)
     const { showtimeId, selectedSeats, ticketPrice } = location.state || {};
     
     const [products, setProducts] = useState([]);
-    const [cart, setCart] = useState({}); // Lưu số lượng: {1: 2, 2: 1} (ID: SL)
+    const [cart, setCart] = useState({}); 
     const [totalAmount, setTotalAmount] = useState(0);
 
-    // 1. Load danh sách bắp nước
+    // Load sản phẩm (Nên gọi API nếu Backend có API Product)
     useEffect(() => {
         if (!selectedSeats) {
             navigate("/"); 
             return;
         }
-   
+        // Giả lập hoặc gọi API
         setProducts([
             { id: 1, name: "Bắp Ngọt", price: 50000, image: "https://img.freepik.com/premium-vector/popcorn-striped-tub_157999-54.jpg" },
             { id: 2, name: "Nước Ngọt", price: 20000, image: "https://img.freepik.com/free-vector/soda-can-aluminium-white_1308-32368.jpg" },
             { id: 3, name: "Combo", price: 65000, image: "https://img.freepik.com/free-vector/pop-corn-soda-fast-food_24877-57924.jpg" }
         ]);
-        // axios.get("http://localhost:8080/api/products")...
     }, [selectedSeats, navigate]);
 
-    // 2. Tính toán tổng tiền realtime
+    // Tính tiền
     useEffect(() => {
         let productTotal = 0;
         Object.keys(cart).forEach(id => {
@@ -38,11 +37,9 @@ function PaymentPage() {
             if (product) productTotal += product.price * cart[id];
         });
         
-        // Tính giảm giá 
-        
+        // Logic Discount Front-end (chỉ mang tính hiển thị ước lượng, Backend sẽ tính lại chính xác)
         let discount = 0;
-        if (selectedSeats && selectedSeats.length >= 5) discount += 0.1; // Mua > 5 vé
-        
+        if (selectedSeats && selectedSeats.length >= 5) discount += 0.1; 
 
         const finalTicketPrice = (ticketPrice || 0) * (1 - discount);
         setTotalAmount(finalTicketPrice + productTotal);
@@ -52,8 +49,7 @@ function PaymentPage() {
     const handleQuantityChange = (id, delta) => {
         setCart(prev => {
             const newQty = (prev[id] || 0) + delta;
-            if (newQty < 0) return prev;
-            return { ...prev, [id]: newQty };
+            return newQty < 0 ? prev : { ...prev, [id]: newQty };
         });
     };
 
@@ -66,20 +62,35 @@ function PaymentPage() {
                 quantity: cart[id]
             })).filter(item => item.quantity > 0);
 
+            // SỬA: Payload khớp với Backend DTO (BookingRequest)
             const payload = {
                 showtimeId: Number(showtimeId),
-                seatIds: selectedSeats.map(s => s.id),
+                showSeatIds: selectedSeats.map(s => s.id), // Key là showSeatIds
                 products: productOrder
             };
 
-            await axios.post("http://localhost:8080/api/bookings", payload, {
+            console.log("=== DEBUG BOOKING PAYLOAD ===");
+            console.log("showtimeId:", showtimeId);
+            console.log("selectedSeats:", selectedSeats);
+            console.log("payload:", JSON.stringify(payload, null, 2));
+            console.log("token:", token);
+
+            const res = await axios.post("http://localhost:8080/api/bookings", payload, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            toast.success("Thanh toán thành công!");
+            // Sau khi thành công, Backend trả về BookingResponse (có QR code, totalAmount)
+            // Bạn có thể show modal QR code ở đây hoặc chuyển trang
+            toast.success(`Đặt vé thành công! Mã đơn: ${res.data.bookingId}`);
+            
+            // Chuyển hướng về trang lịch sử vé
             navigate("/my-tickets"); 
 
         } catch (error) {
+            console.error("=== BOOKING ERROR ===");
+            console.error("Full error:", error);
+            console.error("Response data:", error.response?.data);
+            console.error("Response status:", error.response?.status);
             toast.error(error.response?.data || "Lỗi thanh toán");
         }
     };
@@ -88,9 +99,8 @@ function PaymentPage() {
         <div className="payment-page">
             <Navbar />
             <div className="payment-container">
-                {/* CỘT TRÁI: CHỌN BẮP NƯỚC */}
                 <div className="left-col">
-                    <h2 className="section-title">CHỌN Bắp - Nước</h2>
+                    <h2 className="section-title">CHỌN BẮP - NƯỚC</h2>
                     <div className="product-list">
                         {products.map(p => (
                             <div key={p.id} className="product-card">
@@ -109,13 +119,13 @@ function PaymentPage() {
                     </div>
                 </div>
 
-                {/* CỘT PHẢI: THÔNG TIN THANH TOÁN & QR */}
                 <div className="right-col">
                     <div className="summary-card">
                         <h3>THÔNG TIN ĐẶT VÉ</h3>
                         <div className="sum-row">
                             <span>Ghế ({selectedSeats?.length}):</span>
-                            <span>{selectedSeats?.map(s => s.name).join(", ")}</span>
+                            {/* Dùng seatNumber thay vì name */}
+                            <span>{selectedSeats?.map(s => s.seatNumber).join(", ")}</span>
                         </div>
                         <div className="sum-row">
                             <span>Bắp nước:</span>
@@ -125,24 +135,26 @@ function PaymentPage() {
                         <div className="divider"></div>
                         
                         <div className="total-row">
-                            <span>TỔNG TIỀN:</span>
+                            <span>TỔNG TIỀN (Tạm tính):</span>
                             <span className="price-tag">{totalAmount.toLocaleString()} đ</span>
                         </div>
 
+                        {/* Phần QR này đang là Static (Demo). 
+                            Nếu muốn Dynamic, cần gọi API tạo booking TRƯỚC, 
+                            nhưng logic hiện tại là Bấm nút -> Gọi API -> Xong luôn. 
+                            Nên QR hiển thị ở đây chỉ mang tính chất minh họa cho việc "Sắp thanh toán"
+                        */}
                         <div className="qr-section">
                             <p>Quét mã QR để thanh toán:</p>
-                            {/* Mã QR tĩnh VietQR demo */}
                             <img 
-                                src={`https://img.vietqr.io/image/MB-0969696969-compact.png?amount=${totalAmount}&addInfo=HUST%20Cinema%20Booking&accountName=HUST%20CINEMA`} 
+                                src={`https://img.vietqr.io/image/MB-0969696969-compact.png?amount=${Math.round(totalAmount)}&addInfo=HUST%20Cinema&accountName=HUST%20CINEMA`} 
                                 alt="VietQR" 
                                 className="qr-img-pay"
                             />
-                            <p className="bank-info">MB Bank: 0969 6969 69</p>
-                            <p className="bank-info">Chủ TK: HUST CINEMA</p>
                         </div>
 
                         <button className="btn-pay-confirm" onClick={handleConfirmPayment}>
-                            XÁC NHẬN ĐÃ THANH TOÁN
+                            XÁC NHẬN THANH TOÁN
                         </button>
                     </div>
                 </div>

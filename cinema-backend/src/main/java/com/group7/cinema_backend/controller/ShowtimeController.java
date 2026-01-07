@@ -38,6 +38,15 @@ public class ShowtimeController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    // Lấy suất chiếu theo Rạp và Ngày: /api/showtimes/cinema?cinemaId=7&date=2026-01-07
+    @GetMapping("/cinema")
+    public ResponseEntity<List<Showtime>> getShowtimesByCinema(
+            @RequestParam Long cinemaId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return ResponseEntity.ok(showtimeService.getShowtimesByCinema(cinemaId, date));
+    }
     
     // API lấy theo rạp (Giữ nguyên hoặc chuyển logic sang service nếu muốn đồng bộ)
     // Tạm thời giữ nguyên Repository call ở đây cũng được nếu chưa viết hàm trong Service

@@ -20,6 +20,12 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getAllMovies());
     }
 
-    // Nếu muốn giữ hàm getById, bạn nên thêm nó vào MovieService, 
-    // hoặc tạm thời gọi Repository cũng được, nhưng tốt nhất là qua Service.
+    @GetMapping("/{id}")
+    public ResponseEntity<Movie> getMovieById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(movieService.getMovieById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
