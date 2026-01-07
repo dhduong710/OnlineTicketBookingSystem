@@ -14,20 +14,33 @@ function PaymentPage() {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState({}); 
     const [totalAmount, setTotalAmount] = useState(0);
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [originalAmount, setOriginalAmount] = useState(0);
+    const [discountReasons, setDiscountReasons] = useState([]);
+    const [showtimeInfo, setShowtimeInfo] = useState(null);
 
-    // Load sản phẩm (Nên gọi API nếu Backend có API Product)
+    // Load sản phẩm từ database qua API
     useEffect(() => {
         if (!selectedSeats) {
             navigate("/"); 
             return;
         }
-        // Giả lập hoặc gọi API
-        setProducts([
-            { id: 1, name: "Bắp Ngọt", price: 50000, image: "https://img.freepik.com/premium-vector/popcorn-striped-tub_157999-54.jpg" },
-            { id: 2, name: "Nước Ngọt", price: 20000, image: "https://img.freepik.com/free-vector/soda-can-aluminium-white_1308-32368.jpg" },
-            { id: 3, name: "Combo", price: 65000, image: "https://img.freepik.com/free-vector/pop-corn-soda-fast-food_24877-57924.jpg" }
-        ]);
-    }, [selectedSeats, navigate]);
+        
+        // Gọi API lấy danh sách products
+        axios.get("http://localhost:8080/api/products")
+            .then(res => setProducts(res.data))
+            .catch(err => console.error("Lỗi tải danh sách sản phẩm:", err));
+        
+        // Lấy thông tin showtime để biết ngày chiếu
+        if (showtimeId) {
+            const token = localStorage.getItem("token");
+            axios.get(`http://localhost:8080/api/showtimes/${showtimeId}`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
+            })
+                .then(res => setShowtimeInfo(res.data))
+                .catch(err => console.error("Lỗi tải thông tin suất chiếu:", err));
+        }
+    }, [selectedSeats, navigate, showtimeId]);
 
     // Tính tiền
     useEffect(() => {
@@ -39,12 +52,37 @@ function PaymentPage() {
         
         // Logic Discount Front-end (chỉ mang tính hiển thị ước lượng, Backend sẽ tính lại chính xác)
         let discount = 0;
-        if (selectedSeats && selectedSeats.length >= 5) discount += 0.1; 
+        const reasons = [];
+        
+        // Kiểm tra giảm giá khi đặt >= 5 vé
+        if (selectedSeats && selectedSeats.length >= 5) {
+            discount += 0.1;
+            reasons.push("Giảm 10% giá vé khi đặt từ 5 vé trở lên");
+        }
+        
+        // Kiểm tra giảm giá vào thứ 3
+        if (showtimeInfo && showtimeInfo.showDate) {
+            // Parse date string từ backend (format: "yyyy-MM-dd")
+            const [year, month, day] = showtimeInfo.showDate.split('-').map(Number);
+            const showDate = new Date(year, month - 1, day); // month - 1 vì JS month bắt đầu từ 0
+            console.log("Show date:", showDate, "Day of week:", showDate.getDay());
+            
+            if (showDate.getDay() === 2) { // 2 = Thứ 3 (0=CN, 1=T2, 2=T3, 3=T4...)
+                discount += 0.1;
+                reasons.push("Giảm 10% giá vé vào thứ 3 hàng tuần");
+            }
+        }
 
-        const finalTicketPrice = (ticketPrice || 0) * (1 - discount);
-        setTotalAmount(finalTicketPrice + productTotal);
+        const originalTotal = (ticketPrice || 0) + productTotal;
+        const discountValue = (ticketPrice || 0) * discount;
+        const finalTotal = originalTotal - discountValue;
 
-    }, [cart, products, ticketPrice, selectedSeats]);
+        setOriginalAmount(originalTotal);
+        setDiscountAmount(discountValue);
+        setTotalAmount(finalTotal);
+        setDiscountReasons(reasons);
+
+    }, [cart, products, ticketPrice, selectedSeats, showtimeInfo]);
 
     const handleQuantityChange = (id, delta) => {
         setCart(prev => {
@@ -134,8 +172,31 @@ function PaymentPage() {
                         
                         <div className="divider"></div>
                         
+                        <div className="sum-row">
+                            <span>Tổng tiền (trước giảm giá):</span>
+                            <span>{originalAmount.toLocaleString()} đ</span>
+                        </div>
+                        
+                        {discountAmount > 0 && (
+                            <>
+                                <div className="sum-row discount-row">
+                                    <span>Giảm giá:</span>
+                                    <span className="discount-value">- {discountAmount.toLocaleString()} đ</span>
+                                </div>
+                                {discountReasons.length > 0 && (
+                                    <div className="discount-reasons">
+                                        {discountReasons.map((reason, index) => (
+                                            <p key={index} className="discount-reason-item">• {reason}</p>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                        
+                        <div className="divider"></div>
+                        
                         <div className="total-row">
-                            <span>TỔNG TIỀN (Tạm tính):</span>
+                            <span>TỔNG TIỀN (Sau giảm giá):</span>
                             <span className="price-tag">{totalAmount.toLocaleString()} đ</span>
                         </div>
 

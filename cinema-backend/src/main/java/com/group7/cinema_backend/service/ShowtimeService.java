@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +35,13 @@ public class ShowtimeService {
      */
     public List<Showtime> getShowtimesByCinema(Long cinemaId, LocalDate date) {
         return showtimeRepository.findShowtimesByCinemaAndDate(cinemaId, date);
+    }
+
+    /**
+     * Lấy thông tin chi tiết 1 suất chiếu theo ID
+     */
+    public Optional<Showtime> getShowtimeById(Long id) {
+        return showtimeRepository.findById(id);
     }
 
     /**

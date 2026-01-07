@@ -42,17 +42,24 @@ function BookingPage() {
 
     // --- LOGIC LỌC DỮ LIỆU ---
 
-    // A. Lấy danh sách Tỉnh thành duy nhất từ showtimes
-    // showtime.room.cinema.city
-    const uniqueCities = [...new Set(showtimes.map(item => item.room.cinema.city))];
+    // A. Lấy danh sách Tỉnh thành duy nhất từ showtimes (Hà Nội trước, Hồ Chí Minh sau)
+    const uniqueCities = [...new Set(showtimes.map(item => item.room.cinema.city))].sort((a, b) => {
+        if (a === "Hà Nội") return -1;
+        if (b === "Hà Nội") return 1;
+        return 0;
+    });
 
     // B. Lọc suất chiếu theo Tỉnh đã chọn
     const showtimesInCity = showtimes.filter(s => 
         selectedCity ? s.room.cinema.city === selectedCity : true
     );
 
-    // C. Lấy danh sách Định dạng duy nhất (2D, 3D...) có trong Tỉnh đó
-    const uniqueFormats = [...new Set(showtimesInCity.map(item => item.format))];
+    // C. Lấy danh sách Định dạng duy nhất (2D trước, 3D sau)
+    const uniqueFormats = [...new Set(showtimesInCity.map(item => item.format))].sort((a, b) => {
+        if (a === "2D") return -1;
+        if (b === "2D") return 1;
+        return 0;
+    });
 
     // D. Lọc cuối cùng: Theo Tỉnh VÀ Theo Định dạng
     const finalShowtimes = showtimesInCity.filter(s => 
@@ -163,7 +170,18 @@ function BookingPage() {
                                 <div key={cinemaName} className="cinema-block">
                                     <h3 className="cinema-name">{cinemaName}</h3>
                                     <div className="time-grid">
-                                        {groupedShowtimes[cinemaName].map(show => (
+                                        {groupedShowtimes[cinemaName]
+                                            .sort((a, b) => {
+                                                // Sắp xếp theo thời gian chiếu trước
+                                                if (a.startTime !== b.startTime) {
+                                                    return a.startTime.localeCompare(b.startTime);
+                                                }
+                                                // Nếu cùng giờ, sắp xếp theo số phòng
+                                                const roomA = parseInt(a.room.name.match(/\d+/)?.[0] || 0);
+                                                const roomB = parseInt(b.room.name.match(/\d+/)?.[0] || 0);
+                                                return roomA - roomB;
+                                            })
+                                            .map(show => (
                                             <button 
                                                 key={show.id} 
                                                 className="time-btn"

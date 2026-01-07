@@ -27,6 +27,14 @@ public class ShowtimeController {
         return ResponseEntity.ok(showtimeService.getShowtimesByMovie(movieId, date));
     }
 
+    // Lấy thông tin chi tiết 1 suất chiếu theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Showtime> getShowtimeById(@PathVariable Long id) {
+        return showtimeService.getShowtimeById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // Lấy sơ đồ ghế (kèm trạng thái) của 1 suất chiếu
     // Logic phức tạp đã được đẩy sang Service, Controller giờ rất gọn
     @GetMapping("/{showtimeId}/seats")

@@ -54,7 +54,13 @@ function MovieSlider() {
                             </div>
                         </div>
                         <h3 className="movie-title">{movie.title}</h3>
-                        <p className="movie-info">{movie.duration} phút</p>
+                        <div className="movie-details" style={{textAlign: 'center'}}>
+                            {movie.releaseDate && (
+                                <p className="movie-release">
+                                    <span className="label">Khởi chiếu:</span> {movie.releaseDate}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 ))}
             </Slider>

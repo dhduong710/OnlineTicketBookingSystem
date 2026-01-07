@@ -1,11 +1,12 @@
 package com.group7.cinema_backend.service;
 
 import com.group7.cinema_backend.dto.BookingRequest;
-import com.group7.cinema_backend.dto.BookingResponse; // Đừng quên tạo DTO này như gợi ý trước
+import com.group7.cinema_backend.dto.BookingResponse;
 import com.group7.cinema_backend.entity.*;
 import com.group7.cinema_backend.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingService {
 
     private final BookingRepository bookingRepository;
@@ -61,12 +63,18 @@ public class BookingService {
 
         // 4. ÁP DỤNG GIẢM GIÁ
         double discountAmount = 0;
-        // Giảm 10% nếu thứ 3
+        
+        // Giảm 10% nếu thứ 3 (Tuesday)
         if (showtime.getShowDate().getDayOfWeek() == DayOfWeek.TUESDAY) {
-            discountAmount = totalTicketPrice * 0.10;
+            discountAmount += totalTicketPrice * 0.10;
         }
         
-        double finalTicketPrice = totalTicketPrice - discountAmount;
+        // Giảm 10% khi đặt >= 5 vé
+        if (selectedSeats.size() >= 5) {
+            discountAmount += totalTicketPrice * 0.10;
+        }
+        
+        //double finalTicketPrice = totalTicketPrice - discountAmount;
 
         // 5. TÍNH TIỀN BẮP NƯỚC
         double totalProductPrice = 0;
@@ -91,9 +99,20 @@ public class BookingService {
         // 6. LƯU BOOKING (TỔNG ĐƠN)
         Booking booking = new Booking();
         booking.setCustomer(customer);
+        // Original Amount = Tổng vé + bắp nước (TRƯỚC khi giảm)
         booking.setOriginalAmount(totalTicketPrice + totalProductPrice);
+        // Discount chỉ áp dụng cho vé, không áp dụng cho bắp nước
         booking.setDiscountAmount(discountAmount);
         booking.setPaymentStatus("Pending"); // Chờ thanh toán
+        
+        System.out.println("=== BOOKING DEBUG ===");
+        System.out.println("Total Ticket Price: " + totalTicketPrice);
+        System.out.println("Total Product Price: " + totalProductPrice);
+        System.out.println("Original Amount: " + booking.getOriginalAmount());
+        System.out.println("Discount Amount: " + booking.getDiscountAmount());
+        System.out.println("Payment Amount: " + (booking.getOriginalAmount() - booking.getDiscountAmount()));
+        System.out.println("===================");
+        log.info("Discount applied: {}", booking.getDiscountAmount());;
         
         Booking savedBooking = bookingRepository.save(booking);
 
@@ -111,6 +130,10 @@ public class BookingService {
         }
         
         // 9. TẠO THÔNG TIN THANH TOÁN (PAYMENT)
+        // Đánh dấu đã thanh toán ngay sau khi xác nhận
+        savedBooking.setPaymentStatus("Paid");
+        bookingRepository.save(savedBooking);
+
         Payment payment = new Payment();
         payment.setBooking(savedBooking);
         payment.setAmount(savedBooking.getOriginalAmount() - savedBooking.getDiscountAmount());
