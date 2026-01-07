@@ -4,17 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "room")
+@Table(name = "admin")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class Room {
+public class Admin {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_id")
+    @Column(name = "admin_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    @ManyToOne
-    @JoinColumn(name = "cinema_id", nullable = false)
-    private Cinema cinema;
+    @Column(nullable = false)
+    private String password;
 }

@@ -1,7 +1,8 @@
 package com.group7.cinema_backend.controller;
 
+import com.group7.cinema_backend.dto.SeatResponse;
 import com.group7.cinema_backend.entity.Showtime;
-import com.group7.cinema_backend.repository.ShowtimeRepository;
+import com.group7.cinema_backend.service.ShowtimeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -10,88 +11,51 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.group7.cinema_backend.dto.SeatResponse;
-import com.group7.cinema_backend.entity.Seat;
-import com.group7.cinema_backend.entity.Ticket;
-import com.group7.cinema_backend.repository.SeatRepository;
-import com.group7.cinema_backend.repository.TicketRepository;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api/showtimes")
 @RequiredArgsConstructor
 public class ShowtimeController {
 
-    private final ShowtimeRepository showtimeRepository;
+    private final ShowtimeService showtimeService;
 
-    private final SeatRepository seatRepository;   
-    private final TicketRepository ticketRepository; 
-
-    // API: Lấy danh sách suất chiếu theo Phim và Ngày
-    // URL ví dụ: /api/showtimes?movieId=1&date=2025-`12-25
+    // Lấy danh sách suất chiếu theo Phim và Ngày
     @GetMapping
     public ResponseEntity<List<Showtime>> getShowtimes(
             @RequestParam Long movieId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
+        return ResponseEntity.ok(showtimeService.getShowtimesByMovie(movieId, date));
+    }
+
+    // Lấy thông tin chi tiết 1 suất chiếu theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Showtime> getShowtimeById(@PathVariable Long id) {
+        return showtimeService.getShowtimeById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Lấy sơ đồ ghế (kèm trạng thái) của 1 suất chiếu
+    // Logic phức tạp đã được đẩy sang Service, Controller giờ rất gọn
+    @GetMapping("/{showtimeId}/seats")
+    public ResponseEntity<List<SeatResponse>> getShowtimeSeats(@PathVariable Long showtimeId) {
         try {
-            
-            List<Showtime> showtimes = showtimeRepository.findShowtimesByMovieAndDate(movieId, date);
-            return ResponseEntity.ok(showtimes);
+            List<SeatResponse> seats = showtimeService.getShowSeats(showtimeId);
+            return ResponseEntity.ok(seats);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
-
-    @GetMapping("/{showtimeId}/seats")
-    public ResponseEntity<List<SeatResponse>> getShowtimeSeats(@PathVariable Long showtimeId) {
-        // 1. Lấy thông tin suất chiếu
-        var showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Showtime not found"));
-        
-        // 2. Lấy danh sách ghế của phòng
-        List<Seat> allSeats = seatRepository.findByRoomIdOrderByRowAscColAsc(showtime.getRoom().getId());
-
-        // 3. Lấy vé đã bán 
-        List<Ticket> bookedTickets = ticketRepository.findTicketsByShowtimeId(showtimeId);
-        
-
-        List<Long> bookedSeatIds = bookedTickets.stream()
-                .map(ticket -> ticket.getSeat().getId())
-                .toList();
-
-        double basePrice = showtime.getFormat().equals("3D") || showtime.getFormat().contains("IMAX") ? 80000 : 50000;
-
-        List<SeatResponse> response = allSeats.stream().map(seat -> {
-            boolean isBooked = bookedSeatIds.contains(seat.getId());
-
-            double seatPrice = basePrice;
-            if (seat.getType().equals("VIP")) {
-                seatPrice += 20000;
-            }
-            
-            return new SeatResponse(
-                seat.getId(),
-                seat.getName(),
-                seat.getRow(),
-                seat.getCol(),
-                seat.getType(),
-                isBooked, 
-                seatPrice
-            );
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
-    }
-
-    // API: Lấy danh sách suất chiếu theo Rạp và Ngày
-    // URL ví dụ: /api/showtimes/cinema?cinemaId=1&date=2025-12-25
+    // Lấy suất chiếu theo Rạp và Ngày: /api/showtimes/cinema?cinemaId=7&date=2026-01-07
     @GetMapping("/cinema")
     public ResponseEntity<List<Showtime>> getShowtimesByCinema(
-        @RequestParam Long cinemaId,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+            @RequestParam Long cinemaId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        return ResponseEntity.ok(showtimeRepository.findShowtimesByCinemaAndDate(cinemaId, date));
+        return ResponseEntity.ok(showtimeService.getShowtimesByCinema(cinemaId, date));
     }
+    
+    // API lấy theo rạp (Giữ nguyên hoặc chuyển logic sang service nếu muốn đồng bộ)
+    // Tạm thời giữ nguyên Repository call ở đây cũng được nếu chưa viết hàm trong Service
 }

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
 function MyTickets() {
@@ -10,7 +9,10 @@ function MyTickets() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) return;
+        if (!token) {
+            setLoading(false);
+            return;
+        }
 
         axios.get("http://localhost:8080/api/bookings/my-bookings", {
             headers: { Authorization: `Bearer ${token}` }
@@ -40,70 +42,84 @@ function MyTickets() {
                     </div>
                 ) : (
                     <div className="ticket-list">
-                        {bookings.map(booking => (
-                            <div key={booking.id} className="ticket-card">
-                                {/* Cột Trái: Poster */}
-                                <div className="ticket-poster">
-                                    <img src={booking.showtime.movie.posterUrl} alt="Poster" />
-                                </div>
+                        {bookings.map(booking => {
+                            // Backend trả về DTO với showtime đã được mapping
+                            const showtime = booking.showtime; 
+                            const movie = showtime?.movie;
+                            
+                            // Nếu dữ liệu bị lỗi, bỏ qua
+                            if (!showtime || !movie) return null;
 
-                                {/* Cột Giữa: Thông tin chi tiết */}
-                                <div className="ticket-info">
-                                    <h3 className="movie-name">{booking.showtime.movie.title}</h3>
-                                    
-                                    <div className="info-row">
-                                        <span className="label">Rạp:</span>
-                                        <span className="value">{booking.showtime.room.cinema.name}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="label">Phòng:</span>
-                                        <span className="value">{booking.showtime.room.name}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="label">Suất chiếu:</span>
-                                        <span className="value highlight">
-                                            {booking.showtime.startTime.slice(0,5)} - {booking.showtime.showDate}
-                                        </span>
-                                    </div>
-                                    
-                                    <div className="divider-dashed"></div>
-
-                                    <div className="info-row">
-                                        <span className="label">Ghế:</span>
-                                        <span className="value seat-list">
-                                            {booking.tickets.map(t => t.seat.name).join(", ")}
-                                        </span>
+                            return (
+                                <div key={booking.id} className="ticket-card">
+                                    {/* Cột Trái: Poster */}
+                                    <div className="ticket-poster">
+                                        <img src={movie.posterUrl} alt="Poster" />
                                     </div>
 
-                                    {/* Hiển thị Combo nếu có */}
-                                    {booking.inclusions && booking.inclusions.length > 0 && (
+                                    {/* Cột Giữa: Thông tin chi tiết */}
+                                    <div className="ticket-info">
+                                        <h3 className="movie-name">{movie.title}</h3>
+                                        
                                         <div className="info-row">
-                                            <span className="label">Combo:</span>
-                                            <span className="value">
-                                                {booking.inclusions.map(inc => `${inc.quantity} x ${inc.product.name}`).join(", ")}
+                                            <span className="label">Rạp:</span>
+                                            <span className="value">{showtime.room.cinema.name}</span>
+                                        </div>
+                                        <div className="info-row">
+                                            <span className="label">Phòng:</span>
+                                            <span className="value">{showtime.room.name}</span>
+                                        </div>
+                                        <div className="info-row">
+                                            <span className="label">Suất chiếu:</span>
+                                            <span className="value highlight">
+                                                {/* Cắt chuỗi giờ cho gọn */}
+                                                {showtime.startTime?.slice(0,5)} - {showtime.showDate}
                                             </span>
                                         </div>
-                                    )}
+                                        
+                                        <div className="divider-dashed"></div>
 
-                                    <div className="total-check">
-                                        Tổng tiền: {booking.totalAmount.toLocaleString()} đ
+                                        <div className="info-row">
+                                            <span className="label">Ghế:</span>
+                                            <span className="value seat-list">
+                                                {/* SỬA: DTO trả về seatNumbers array trực tiếp */}
+                                                {booking.seatNumbers.join(", ")}
+                                            </span>
+                                        </div>
+
+                                        {/* Hiển thị Combo nếu có */}
+                                        {booking.inclusions && booking.inclusions.length > 0 && (
+                                            <div className="info-row">
+                                                <span className="label">Combo:</span>
+                                                <span className="value">
+                                                    {booking.inclusions.map(inc => `${inc.quantity} x ${inc.productName}`).join(", ")}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        <div className="total-check">
+                                            {/* SỬA: Backend trả về originalAmount - discountAmount */}
+                                            Tổng tiền: {(booking.originalAmount - (booking.discountAmount || 0)).toLocaleString()} đ
+                                        </div>
+                                    </div>
+
+                                    {/* Cột Phải: QR Code & Trạng thái */}
+                                    <div className="ticket-qr-col">
+                                        <div className={`status-badge ${booking.paymentStatus === 'Pending' ? 'pending' : 'success'}`}>
+                                            {booking.paymentStatus === 'Pending' ? 'CHỜ THANH TOÁN' : 'ĐÃ THANH TOÁN'}
+                                        </div>
+                                        
+                                        <img 
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=BOOKING-${booking.id}`} 
+                                            alt="QR Check-in" 
+                                            className="qr-img"
+                                        />
+                                        <span className="booking-code">Mã: #{booking.id}</span>
+                                        <p className="note">Đưa mã này cho nhân viên soát vé</p>
                                     </div>
                                 </div>
-
-                                {/* Cột Phải: QR Code & Trạng thái */}
-                                <div className="ticket-qr-col">
-                                    <div className="status-badge success">ĐÃ THANH TOÁN</div>
-                                    {/* Tạo mã QR Online đơn giản từ Google API */}
-                                    <img 
-                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=BOOKING-${booking.id}`} 
-                                        alt="QR Check-in" 
-                                        className="qr-img"
-                                    />
-                                    <span className="booking-code">Mã: #{booking.id}</span>
-                                    <p className="note">Đưa mã này cho nhân viên soát vé</p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>

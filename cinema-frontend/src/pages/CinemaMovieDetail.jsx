@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { toast } from 'react-toastify';
-import { FaPlay, FaTicketAlt, FaClock, FaCalendarAlt } from 'react-icons/fa';
+import { FaClock, FaCalendarAlt } from 'react-icons/fa';
 
-function MovieDetail() {
+function CinemaMovieDetail() {
     const { id } = useParams(); // Lấy ID phim từ URL
-    const navigate = useNavigate();
     const [movie, setMovie] = useState(null);
     const [activeTab, setActiveTab] = useState('summary'); // 'summary' hoặc 'trailer'
 
@@ -17,11 +16,6 @@ function MovieDetail() {
             .then(res => setMovie(res.data))
             .catch(err => toast.error("Không tìm thấy phim!"));
     }, [id]);
-
-    const handleBuyTicket = () => {
-
-     navigate(`/booking/${id}`);
-};
 
     // Hàm chuyển đổi link Youtube thường thành link Embed để chạy được trên web
     const getYoutubeEmbedUrl = (url) => {
@@ -68,13 +62,6 @@ function MovieDetail() {
                                     ? movie.genres.map(g => g.name).join(", ") 
                                     : "Đang cập nhật"}
                             </p>
-                        </div>
-
-                        <div className="detail-actions">
-                            
-                            <button className="btn-buy-now" onClick={handleBuyTicket}>
-                                <FaTicketAlt style={{marginRight: '8px'}}/> MUA VÉ
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -125,4 +112,4 @@ function MovieDetail() {
     );
 }
 
-export default MovieDetail;
+export default CinemaMovieDetail;

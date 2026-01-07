@@ -1277,3 +1277,44 @@ h2 { color: #888; margin-bottom: 25px; font-weight: 500; font-size: 14px; }
     color: white;
     border-color: #b90000;
 }
+
+.movie-details {
+    padding: 10px;
+    text-align: left;
+}
+
+.movie-details p {
+    margin: 5px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.movie-details .label {
+    font-weight: 600;
+    color: #333;
+}
+
+.discount-row {
+    color: #e74c3c;
+}
+
+.discount-value {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.discount-reasons {
+    margin-top: 5px;
+    padding-left: 10px;
+}
+
+.discount-reason-item {
+    font-size: 12px;
+    color: #e74c3c;
+    margin: 3px 0;
+    font-style: italic;
+}
+
+.btn-view {
+    background-color: #dc3545 !important;
+}

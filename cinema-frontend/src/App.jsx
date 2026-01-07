@@ -14,6 +14,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 
 import CinemaBookingPage from './pages/CinemaBookingPage';
+import CinemaMovieDetail from './pages/CinemaMovieDetail';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/my-tickets" element={<MyTickets />} />
 
         <Route path="/cinema-booking/:cinemaId" element={<CinemaBookingPage />} />
+        <Route path="/cinema-movie-detail/:id" element={<CinemaMovieDetail />} />
 
       </Routes>
     </BrowserRouter>

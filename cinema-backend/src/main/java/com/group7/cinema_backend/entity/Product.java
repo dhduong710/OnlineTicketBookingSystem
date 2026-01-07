@@ -13,5 +13,7 @@ public class Product {
 
     private String name;  // Bắp, Nước, Combo
     private double price; // 50k, 20k, 65k
-    private String imageUrl; // Link ảnh minh họa
+    
+    @Column(length = 500)
+    private String image; // URL hình ảnh sản phẩm
 }

@@ -6,4 +6,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class AuthResponse {
     private String token; 
+    // Có thể thêm role nếu cần (VD: "ROLE_CUSTOMER")
 }

@@ -21,19 +21,6 @@ function Home() {
 
     const filteredCinemas = cinemas.filter(c => c.city === selectedCity);
 
-    // Hàm lấy ảnh giả lập (Dùng ID để ảnh cố định cho từng rạp)
-    const getCinemaImage = (id) => {
-        const images = [
-            "https://static.vinwonders.com/production/2025/02/rap-chieu-phim-sai-gon.jpg",
-            "https://cellphones.com.vn/sforum/wp-content/uploads/2022/12/rap-chieu-phim-gan-day-2.jpg",
-            "https://aeonmall-review-rikkei.cdn.vccloud.vn/website/21/articles/May2025/zUJCqWdZQlgTZz2MajVT.jpg",
-            "https://ghehoitruong.vn/wp-content/uploads/2022/11/loi-ich-cua-viec-xem-phim-o-rap-5.jpg",
-            "https://statics.vinpearl.com/rap-phim-ha-noi-8_1681575821.jpg",
-            "https://static.vinwonders.com/production/rap-phim-ha-noi.jpg"
-        ];
-        return images[(id || 0) % images.length]; 
-    };
-
     return (
         <div className="home-page">
             <Navbar />
@@ -50,7 +37,7 @@ function Home() {
                 <div className="tab-content" style={{ minHeight: '500px' }}>
                     {activeTab === 'movie' ? (
                         <div className="movie-selection fade-in">
-                            <h2 className="section-title">PHIM ĐANG CHIẾU</h2>
+                            <h2 className="section-title">DANH SÁCH PHIM</h2>
                             <MovieSlider />
                         </div>
                     ) : (
@@ -83,7 +70,7 @@ function Home() {
                                         >
                                             {/* Phần Ảnh Cao (Portrait style) */}
                                             <div className="card-img-container">
-                                                <img src={cinema.imageUrl || getCinemaImage(cinema.id)} alt={cinema.name} />
+                                                <img src={cinema.imageUrl} alt={cinema.name} />
                                                 <div className="card-overlay">
                                                     <span className="btn-view">ĐẶT VÉ NGAY</span>
                                                 </div>
