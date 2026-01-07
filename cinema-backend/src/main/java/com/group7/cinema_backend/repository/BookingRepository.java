@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    // Tìm lịch sử đặt vé của 1 khách hàng (để hiện trang Lịch sử)
-    List<Booking> findByCustomer_EmailOrderByBookingTimeDesc(String email);
+    // Tìm lịch sử đặt vé của khách hàng, xếp theo ID giảm dần (mới nhất lên đầu)
+    List<Booking> findByCustomer_EmailOrderByIdDesc(String email);
 }

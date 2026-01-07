@@ -1,6 +1,7 @@
 package com.group7.cinema_backend.service;
 
 import com.group7.cinema_backend.dto.BookingRequest;
+import com.group7.cinema_backend.dto.BookingResponse; // Đừng quên tạo DTO này như gợi ý trước
 import com.group7.cinema_backend.entity.*;
 import com.group7.cinema_backend.repository.*;
 import jakarta.transaction.Transactional;
@@ -8,8 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,67 +17,69 @@ import java.util.List;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
-    private final TicketRepository ticketRepository;
-    private final SeatRepository seatRepository;
-    private final ShowtimeRepository showtimeRepository;
+    private final ShowSeatRepository showSeatRepository; // Thay cho TicketRepository
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final InclusionRepository inclusionRepository;
+    private final PaymentRepository paymentRepository;
 
-    @Transactional 
-    public Booking createBooking(String userEmail, BookingRequest request) {
-        // 1. Tìm User & Showtime 
+    @Transactional
+    public BookingResponse createBooking(String userEmail, BookingRequest request) {
+        // 1. Tìm User
         Customer customer = customerRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
-                .orElseThrow(() -> new RuntimeException("Showtime not found"));
+                .orElseThrow(() -> new RuntimeException("Khách hàng không tồn tại"));
 
-        // 2. Validate & Lock Ghế 
-        List<Seat> seats = seatRepository.findAllById(request.getSeatIds());
-        List<Ticket> bookedTickets = ticketRepository.findTicketsByShowtimeId(showtime.getId());
-        for (Ticket ticket : bookedTickets) {
-            if (request.getSeatIds().contains(ticket.getSeat().getId())) {
-                throw new RuntimeException("Ghế " + ticket.getSeat().getName() + " đã bị đặt!");
+        // 2. Lấy danh sách ShowSeat từ DB và Validate
+        List<ShowSeat> selectedSeats = showSeatRepository.findAllById(request.getShowSeatIds());
+        
+        if (selectedSeats.size() != request.getShowSeatIds().size()) {
+            throw new RuntimeException("Một số ghế không hợp lệ!");
+        }
+
+        // Kiểm tra xem ghế có còn trống không
+        for (ShowSeat seat : selectedSeats) {
+            if (!"Available".equalsIgnoreCase(seat.getStatus())) {
+                throw new RuntimeException("Ghế " + seat.getSeatTemplate().getSeatNumber() + " đã bị người khác đặt!");
             }
         }
 
-        // 3. TÍNH TIỀN VÉ (Ticket Price)
-        double basePrice = isSpecialFormat(showtime.getFormat()) ? 80000 : 50000;
+        // Lấy thông tin ShowTime từ ghế đầu tiên (để tính giá cơ bản)
+        Showtime showtime = selectedSeats.get(0).getShowtime();
+
+        // 3. TÍNH TIỀN VÉ
         double totalTicketPrice = 0;
-        for (Seat seat : seats) {
+        double basePrice = is3DMovie(showtime.getFormat()) ? 80000 : 50000;
+
+        for (ShowSeat seat : selectedSeats) {
+            // Logic giá: Giá gốc (Có thể mở rộng logic VIP ở đây nếu SeatTemplate có field Type)
             double seatPrice = basePrice;
-            if ("VIP".equalsIgnoreCase(seat.getType())) seatPrice += 20000;
+            
+            // Cập nhật giá bán thực tế vào ShowSeat (để lưu lịch sử giá lúc mua)
+            seat.setSoldPrice(seatPrice);
             totalTicketPrice += seatPrice;
         }
 
-        // 4. ÁP DỤNG GIẢM GIÁ (Discount Logic) 
-        double discountRate = 0.0;
-        
-        // - Giảm 10% nếu là Thứ 3
+        // 4. ÁP DỤNG GIẢM GIÁ
+        double discountAmount = 0;
+        // Giảm 10% nếu thứ 3
         if (showtime.getShowDate().getDayOfWeek() == DayOfWeek.TUESDAY) {
-            discountRate += 0.10;
+            discountAmount = totalTicketPrice * 0.10;
         }
-        // - Giảm 10% nếu mua >= 5 vé
-        if (seats.size() >= 5) {
-            discountRate += 0.10;
-        }
-
-        // Công thức: Tổng tiền vé sau giảm = Giá vé gốc * (1 - Tổng % giảm)
-        double finalTicketPrice = totalTicketPrice * (1.0 - discountRate);
-
-        // 5. TÍNH TIỀN BẮP NƯỚC (Product Price)
-        double totalProductPrice = 0;
-        List<Inclusion> inclusionsToSave = new java.util.ArrayList<>();
         
+        double finalTicketPrice = totalTicketPrice - discountAmount;
+
+        // 5. TÍNH TIỀN BẮP NƯỚC
+        double totalProductPrice = 0;
+        List<Inclusion> inclusionsToSave = new ArrayList<>();
+
         if (request.getProducts() != null) {
             for (BookingRequest.ProductOrder pOrder : request.getProducts()) {
                 if (pOrder.getQuantity() > 0) {
                     Product product = productRepository.findById(pOrder.getProductId())
-                            .orElseThrow(() -> new RuntimeException("Product not found"));
-                    
+                            .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại ID: " + pOrder.getProductId()));
+
                     totalProductPrice += product.getPrice() * pOrder.getQuantity();
-                    
-                    // Chuẩn bị lưu xuống DB
+
                     Inclusion inclusion = new Inclusion();
                     inclusion.setProduct(product);
                     inclusion.setQuantity(pOrder.getQuantity());
@@ -86,37 +88,51 @@ public class BookingService {
             }
         }
 
-        // 6. TỔNG THANH TOÁN CUỐI CÙNG 
-        double finalTotalAmount = finalTicketPrice + totalProductPrice;
-
-        // 7. Lưu Booking
+        // 6. LƯU BOOKING (TỔNG ĐƠN)
         Booking booking = new Booking();
         booking.setCustomer(customer);
-        booking.setShowtime(showtime);
-        booking.setBookingTime(LocalDateTime.now());
-        booking.setTotalAmount(finalTotalAmount);
-        booking.setPaymentStatus("SUCCESS"); // Mặc định thành công
+        booking.setOriginalAmount(totalTicketPrice + totalProductPrice);
+        booking.setDiscountAmount(discountAmount);
+        booking.setPaymentStatus("Pending"); // Chờ thanh toán
+        
         Booking savedBooking = bookingRepository.save(booking);
 
-        // 8. Lưu Vé (Ticket)
-        for (Seat seat : seats) {
-            Ticket ticket = new Ticket();
-            ticket.setBooking(savedBooking);
-            ticket.setShowtime(showtime);
-            ticket.setSeat(seat);
-            ticketRepository.save(ticket);
+        // 7. CẬP NHẬT TRẠNG THÁI GHẾ (Sold) & GÁN VÀO BOOKING
+        for (ShowSeat seat : selectedSeats) {
+            seat.setStatus("Sold");
+            seat.setBooking(savedBooking); // Link ghế với đơn hàng
+            showSeatRepository.save(seat);
         }
 
-        // 9. Lưu Bắp Nước (Inclusion)
+        // 8. LƯU BẮP NƯỚC
         for (Inclusion inc : inclusionsToSave) {
             inc.setBooking(savedBooking);
             inclusionRepository.save(inc);
         }
+        
+        // 9. TẠO THÔNG TIN THANH TOÁN (PAYMENT)
+        Payment payment = new Payment();
+        payment.setBooking(savedBooking);
+        payment.setAmount(savedBooking.getOriginalAmount() - savedBooking.getDiscountAmount());
+        payment.setBankName("MB Bank");
+        payment.setBankAccount("0987654321");
+        // Giả lập QR Code nội dung chuyển khoản
+        payment.setQrCode("QR_CODE_DATA_FOR_BOOKING_" + savedBooking.getId());
+        
+        paymentRepository.save(payment);
 
-        return savedBooking;
+        // 10. Trả về kết quả
+        return BookingResponse.builder()
+                .bookingId(savedBooking.getId())
+                .totalAmount(payment.getAmount())
+                .paymentStatus(savedBooking.getPaymentStatus())
+                .qrCode(payment.getQrCode())
+                .bankName(payment.getBankName())
+                .bankAccount(payment.getBankAccount())
+                .build();
     }
 
-    private boolean isSpecialFormat(String format) {
-        return format != null && (format.contains("3D") || format.contains("IMAX"));
+    private boolean is3DMovie(String format) {
+        return format != null && format.contains("3D");
     }
 }

@@ -1,7 +1,7 @@
 package com.group7.cinema_backend.controller;
 
 import com.group7.cinema_backend.entity.Movie;
-import com.group7.cinema_backend.repository.MovieRepository;
+import com.group7.cinema_backend.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,17 +13,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieController {
 
-    private final MovieRepository movieRepository;
+    private final MovieService movieService;
 
     @GetMapping
     public ResponseEntity<List<Movie>> getAllMovies() {
-        return ResponseEntity.ok(movieRepository.findAll());
+        return ResponseEntity.ok(movieService.getAllMovies());
     }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable Long id) {
-        return movieRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+
+    // Nếu muốn giữ hàm getById, bạn nên thêm nó vào MovieService, 
+    // hoặc tạm thời gọi Repository cũng được, nhưng tốt nhất là qua Service.
 }

@@ -4,16 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "cinema")
+@Table(name = "director")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class Cinema {
+public class Director {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cinema_id")
+    @Column(name = "director_id")
     private Long id;
 
     @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
-    private String city;
 }

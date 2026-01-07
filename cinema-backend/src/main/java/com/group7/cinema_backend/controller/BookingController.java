@@ -1,15 +1,16 @@
 package com.group7.cinema_backend.controller;
 
 import com.group7.cinema_backend.dto.BookingRequest;
+import com.group7.cinema_backend.dto.BookingResponse;
 import com.group7.cinema_backend.entity.Booking;
+import com.group7.cinema_backend.repository.BookingRepository;
 import com.group7.cinema_backend.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
-import com.group7.cinema_backend.repository.BookingRepository;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -17,18 +18,17 @@ import com.group7.cinema_backend.repository.BookingRepository;
 public class BookingController {
 
     private final BookingService bookingService;
-
     private final BookingRepository bookingRepository;
 
     @PostMapping
     public ResponseEntity<?> createBooking(@RequestBody BookingRequest request, Authentication authentication) {
         try {
-            // Lấy email của người dùng đang đăng nhập từ Token
             String email = authentication.getName();
             
-            Booking newBooking = bookingService.createBooking(email, request);
+            // Service trả về BookingResponse (có thông tin thanh toán & QR)
+            BookingResponse response = bookingService.createBooking(email, request);
             
-            return ResponseEntity.ok("Đặt vé thành công! Mã đơn: " + newBooking.getId());
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -36,8 +36,11 @@ public class BookingController {
 
     @GetMapping("/my-bookings")
     public ResponseEntity<List<Booking>> getMyBookings(Authentication authentication) {
-        String email = authentication.getName(); 
-        List<Booking> bookings = bookingRepository.findByCustomer_EmailOrderByBookingTimeDesc(email);
+        String email = authentication.getName();
+        
+        // SỬA: Dùng phương thức OrderByIdDesc (vì DB mới không có bookingTime, dùng ID để biết cái nào mới nhất)
+        List<Booking> bookings = bookingRepository.findByCustomer_EmailOrderByIdDesc(email);
+        
         return ResponseEntity.ok(bookings);
     }
 }
