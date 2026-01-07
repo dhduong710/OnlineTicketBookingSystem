@@ -26,7 +26,9 @@ public class SecurityConfig {
             .cors(org.springframework.security.config.Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/movies/**", "/api/showtimes/**", "/api/cinemas/**", "/api/products/**").permitAll() 
+                .requestMatchers("/api/auth/**", "/api/movies/**", "/api/showtimes/**", "/api/cinemas/**", "/api/products/**").permitAll()
+                .requestMatchers("/api/admin/auth/**").permitAll() // Admin login không cần auth
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Các endpoint admin khác cần role ADMIN
                 .requestMatchers("/api/bookings/**").authenticated() 
                 .anyRequest().authenticated()
             )

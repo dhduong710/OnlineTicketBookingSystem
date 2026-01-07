@@ -1,5 +1,6 @@
 package com.group7.cinema_backend.config;
 
+import com.group7.cinema_backend.repository.AdminRepository;
 import com.group7.cinema_backend.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,12 +19,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
     private final CustomerRepository customerRepository;
+    private final AdminRepository adminRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> customerRepository.findByEmail(username)
-                .or(() -> customerRepository.findByPhone(username)) // Nếu email không có, tìm bằng SĐT
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> {
+            // Thử tìm customer trước (bằng email hoặc phone)
+            var customer = customerRepository.findByEmail(username)
+                    .or(() -> customerRepository.findByPhone(username));
+            
+            if (customer.isPresent()) {
+                return customer.get();
+            }
+            
+            // Nếu không phải customer, thử tìm admin (bằng username)
+            return adminRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        };
     }
 
     @Bean
