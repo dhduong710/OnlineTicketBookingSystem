@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MovieManagement from './MovieManagement';
 import RevenueStatistics from './RevenueStatistics';
+import CustomerAnalytics from './CustomerAnalytics';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -95,12 +96,7 @@ const AdminDashboard = () => {
         <main className="admin-content">
           {activeTab === 'movies' && <MovieManagement />}
           {activeTab === 'revenue' && <RevenueStatistics />}
-          {activeTab === 'customers' && (
-            <div className="placeholder-content">
-              <h2>👥 Quản lý Khách hàng</h2>
-              <p>Chức năng đang phát triển...</p>
-            </div>
-          )}
+          {activeTab === 'customers' && <CustomerAnalytics />}
         </main>
       </div>
     </div>

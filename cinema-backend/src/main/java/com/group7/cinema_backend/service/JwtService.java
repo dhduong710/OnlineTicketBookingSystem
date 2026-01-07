@@ -21,8 +21,9 @@ public class JwtService {
     @Value("${application.security.jwt.secret-key}")
     private String secretKey; 
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
         return createToken(claims, username);
     }
 
@@ -72,5 +73,11 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    // 4. Trích xuất role từ token
+    public String extractRole(String token) {
+        Object role = extractClaim(token, claims -> claims.get("role"));
+        return role != null ? role.toString() : "ROLE_USER";
     }
 }

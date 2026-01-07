@@ -3,7 +3,6 @@ package com.group7.cinema_backend.service;
 import com.group7.cinema_backend.dto.RevenueStatsRequest;
 import com.group7.cinema_backend.dto.RevenueStatsResponse;
 import com.group7.cinema_backend.entity.Booking;
-import com.group7.cinema_backend.entity.ShowSeat;
 import com.group7.cinema_backend.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

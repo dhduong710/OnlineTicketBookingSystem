@@ -51,7 +51,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Tạo Token
-        var jwtToken = jwtService.generateToken(user.getEmail());
+        var jwtToken = jwtService.generateToken(user.getEmail(), "ROLE_USER");
 
         return new AuthResponse(jwtToken);
     }

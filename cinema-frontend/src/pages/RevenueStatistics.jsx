@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 
 const RevenueStatistics = () => {
   const [loading, setLoading] = useState(false);
+  const [activeView, setActiveView] = useState('overview'); // 'overview' or 'detail'
   
   // Filter states
   const [startDate, setStartDate] = useState('');
@@ -15,7 +16,8 @@ const RevenueStatistics = () => {
   const [cities, setCities] = useState([]);
   const [cinemas, setCinemas] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [overviewStats, setOverviewStats] = useState(null); // For overview tab
+  const [detailStats, setDetailStats] = useState(null); // For detail tab
 
   useEffect(() => {
     fetchFilterData();
@@ -28,10 +30,80 @@ const RevenueStatistics = () => {
   }, []);
 
   useEffect(() => {
-    if (startDate && endDate) {
-      fetchStats();
+    if (startDate && endDate && activeView === 'overview') {
+      fetchOverviewStats();
     }
   }, [startDate, endDate]);
+
+  const fetchOverviewStats = async () => {
+    setLoading(true);
+    const token = localStorage.getItem('token');
+    
+    const requestData = {
+      startDate,
+      endDate,
+      city: null,
+      cinemaId: null,
+      movieId: null
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/api/admin/revenue/stats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Không thể tải thống kê');
+      }
+
+      const data = await response.json();
+      setOverviewStats(data);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDetailStats = async () => {
+    setLoading(true);
+    const token = localStorage.getItem('token');
+    
+    const requestData = {
+      startDate,
+      endDate,
+      city: selectedCity || null,
+      cinemaId: selectedCinema || null,
+      movieId: selectedMovie || null
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/api/admin/revenue/stats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Không thể tải thống kê');
+      }
+
+      const data = await response.json();
+      setDetailStats(data);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchFilterData = async () => {
     const token = localStorage.getItem('token');
@@ -69,43 +141,8 @@ const RevenueStatistics = () => {
     }
   };
 
-  const fetchStats = async () => {
-    setLoading(true);
-    const token = localStorage.getItem('token');
-    
-    const requestData = {
-      startDate,
-      endDate,
-      city: selectedCity || null,
-      cinemaId: selectedCinema || null,
-      movieId: selectedMovie || null
-    };
-
-    try {
-      const response = await fetch('http://localhost:8080/api/admin/revenue/stats', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(requestData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Không thể tải thống kê');
-      }
-
-      const data = await response.json();
-      setStats(data);
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleApplyFilters = () => {
-    fetchStats();
+    fetchDetailStats();
   };
 
   const handleResetFilters = () => {
@@ -113,7 +150,7 @@ const RevenueStatistics = () => {
     setSelectedCinema('');
     setSelectedMovie('');
     setCinemas([]);
-    fetchStats();
+    setDetailStats(null);
   };
 
   const formatCurrency = (amount) => {
@@ -127,8 +164,25 @@ const RevenueStatistics = () => {
     <div className="revenue-container">
       <h2 className="revenue-title">Thống kê Doanh thu</h2>
 
-      {/* Filters */}
-      <div className="revenue-filters">
+      {/* Tabs */}
+      <div className="revenue-tabs">
+        <button 
+          className={`revenue-tab ${activeView === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveView('overview')}
+        >
+          Tổng quan
+        </button>
+        <button 
+          className={`revenue-tab ${activeView === 'detail' ? 'active' : ''}`}
+          onClick={() => setActiveView('detail')}
+        >
+          Chi tiết
+        </button>
+      </div>
+
+      {/* Filters - Only in Detail View */}
+      {activeView === 'detail' && (
+        <div className="revenue-filters">
         <div className="filter-row">
           <div className="filter-group">
             <label>Từ ngày</label>
@@ -192,29 +246,30 @@ const RevenueStatistics = () => {
           </button>
         </div>
       </div>
+      )}
 
-      {/* Stats Overview */}
-      {stats && (
+      {/* Stats Overview - Overview Tab */}
+      {overviewStats && activeView === 'overview' && (
         <>
           <div className="stats-overview">
             <div className="stat-card total">
               <div className="stat-info">
                 <h3>Tổng Doanh thu</h3>
-                <p className="stat-value">{formatCurrency(stats.totalRevenue)}</p>
+                <p className="stat-value">{formatCurrency(overviewStats.totalRevenue)}</p>
               </div>
             </div>
 
             <div className="stat-card bookings">
               <div className="stat-info">
                 <h3>Số Đơn đặt</h3>
-                <p className="stat-value">{stats.totalBookings.toLocaleString()}</p>
+                <p className="stat-value">{overviewStats.totalBookings.toLocaleString()}</p>
               </div>
             </div>
 
             <div className="stat-card tickets">
               <div className="stat-info">
                 <h3>Số Vé bán</h3>
-                <p className="stat-value">{stats.totalTickets.toLocaleString()}</p>
+                <p className="stat-value">{overviewStats.totalTickets.toLocaleString()}</p>
               </div>
             </div>
 
@@ -222,14 +277,56 @@ const RevenueStatistics = () => {
               <div className="stat-info">
                 <h3>Trung bình/Đơn</h3>
                 <p className="stat-value">
-                  {formatCurrency(stats.totalBookings > 0 ? stats.totalRevenue / stats.totalBookings : 0)}
+                  {formatCurrency(overviewStats.totalBookings > 0 ? overviewStats.totalRevenue / overviewStats.totalBookings : 0)}
                 </p>
               </div>
             </div>
           </div>
+        </>
+      )}
 
+      {/* Stats Overview - Detail Tab */}
+      {activeView === 'detail' && (
+        <>
+          <div className="stats-overview">
+            <div className="stat-card total">
+              <div className="stat-info">
+                <h3>Tổng Doanh thu</h3>
+                <p className="stat-value">{formatCurrency(detailStats?.totalRevenue || 0)}</p>
+              </div>
+            </div>
+
+            <div className="stat-card bookings">
+              <div className="stat-info">
+                <h3>Số Đơn đặt</h3>
+                <p className="stat-value">{(detailStats?.totalBookings || 0).toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="stat-card tickets">
+              <div className="stat-info">
+                <h3>Số Vé bán</h3>
+                <p className="stat-value">{(detailStats?.totalTickets || 0).toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="stat-card average">
+              <div className="stat-info">
+                <h3>Trung bình/Đơn</h3>
+                <p className="stat-value">
+                  {formatCurrency(detailStats && detailStats.totalBookings > 0 ? detailStats.totalRevenue / detailStats.totalBookings : 0)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Detailed Tables - Only in Overview tab */}
+      {overviewStats && activeView === 'overview' && (
+        <>
           {/* Revenue by City */}
-          {stats.revenueByCity.length > 0 && (
+          {overviewStats.revenueByCity.length > 0 && (
             <div className="revenue-section">
               <h3 className="section-title">Doanh thu theo Tỉnh thành</h3>
               <div className="revenue-table">
@@ -243,7 +340,7 @@ const RevenueStatistics = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {stats.revenueByCity.map((item, index) => (
+                    {overviewStats.revenueByCity.map((item, index) => (
                       <tr key={index}>
                         <td>{item.city}</td>
                         <td className="amount">{formatCurrency(item.revenue)}</td>
@@ -252,10 +349,10 @@ const RevenueStatistics = () => {
                           <div className="progress-bar">
                             <div 
                               className="progress-fill"
-                              style={{ width: `${(item.revenue / stats.totalRevenue * 100)}%` }}
+                              style={{ width: `${(item.revenue / overviewStats.totalRevenue * 100)}%` }}
                             ></div>
                             <span className="progress-text">
-                              {((item.revenue / stats.totalRevenue * 100).toFixed(1))}%
+                              {((item.revenue / overviewStats.totalRevenue * 100).toFixed(1))}%
                             </span>
                           </div>
                         </td>
@@ -268,7 +365,7 @@ const RevenueStatistics = () => {
           )}
 
           {/* Revenue by Cinema */}
-          {stats.revenueByCinema.length > 0 && (
+          {overviewStats.revenueByCinema.length > 0 && (
             <div className="revenue-section">
               <h3 className="section-title">Doanh thu theo Rạp chiếu</h3>
               <div className="revenue-table">
@@ -282,7 +379,7 @@ const RevenueStatistics = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {stats.revenueByCinema.slice(0, 10).map((item, index) => (
+                    {overviewStats.revenueByCinema.slice(0, 10).map((item, index) => (
                       <tr key={index}>
                         <td>{item.cinemaName}</td>
                         <td>{item.city}</td>
@@ -297,7 +394,7 @@ const RevenueStatistics = () => {
           )}
 
           {/* Revenue by Movie */}
-          {stats.revenueByMovie.length > 0 && (
+          {overviewStats.revenueByMovie.length > 0 && (
             <div className="revenue-section">
               <h3 className="section-title">Doanh thu theo Phim</h3>
               <div className="revenue-table">
@@ -311,7 +408,7 @@ const RevenueStatistics = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {stats.revenueByMovie.slice(0, 10).map((item, index) => (
+                    {overviewStats.revenueByMovie.slice(0, 10).map((item, index) => (
                       <tr key={index}>
                         <td>{item.movieTitle}</td>
                         <td className="amount">{formatCurrency(item.revenue)}</td>
@@ -329,7 +426,7 @@ const RevenueStatistics = () => {
         </>
       )}
 
-      {!stats && !loading && (
+      {!overviewStats && !loading && activeView === 'overview' && (
         <div className="no-data">
           <p>Chọn khoảng thời gian để xem thống kê</p>
         </div>
