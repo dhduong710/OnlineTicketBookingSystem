@@ -9,6 +9,9 @@ import BookingPage from './pages/BookingPage';
 import SeatSelection from './pages/SeatSelection';
 import PaymentPage from './pages/PaymentPage';
 import MyTickets from './pages/MyTickets';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import MovieManagement from './pages/MovieManagement';
 
 import "slick-carousel/slick/slick-theme.css";
 
@@ -32,6 +35,11 @@ function App() {
 
         <Route path="/cinema-booking/:cinemaId" element={<CinemaBookingPage />} />
         <Route path="/cinema-movie-detail/:id" element={<CinemaMovieDetail />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/movies" element={<MovieManagement />} />
 
       </Routes>
     </BrowserRouter>
