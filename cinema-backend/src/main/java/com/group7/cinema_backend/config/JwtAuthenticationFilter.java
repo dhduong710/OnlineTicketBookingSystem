@@ -54,14 +54,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
                     if (jwtService.isTokenValid(jwt, userDetails)) {
+                        // Extract role từ token
+                        
+    
+                        // Tạo authentication với role
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+            );
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
+            }
                 } catch (Exception e) {
                     // Nếu không tìm thấy User (do DB reset) hoặc lỗi khác:
                     // Ta KHÔNG làm gì cả, cứ để filterChain chạy tiếp.

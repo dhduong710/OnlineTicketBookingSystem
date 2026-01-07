@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaUser, FaLock } from 'react-icons/fa';
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
@@ -65,7 +67,7 @@ const AdminLogin = () => {
           <div className="admin-input-group">
             <label>Tên đăng nhập</label>
             <div className="admin-input-wrapper">
-              <span className="admin-input-icon">👤</span>
+              <FaUser className="admin-input-icon" />
               <input
                 type="text"
                 value={username}
@@ -79,7 +81,7 @@ const AdminLogin = () => {
           <div className="admin-input-group">
             <label>Mật khẩu</label>
             <div className="admin-input-wrapper">
-              <span className="admin-input-icon">🔒</span>
+              <FaLock className="admin-input-icon" />
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -87,13 +89,12 @@ const AdminLogin = () => {
                 placeholder="Nhập password"
                 required
               />
-              <span 
+              <div 
                 className="toggle-password" 
                 onClick={() => setShowPassword(!showPassword)}
-                style={{ cursor: 'pointer' }}
               >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
-              </span>
+                {showPassword ? <MdVisibility /> : <MdVisibilityOff />}
+              </div>
             </div>
           </div>
 

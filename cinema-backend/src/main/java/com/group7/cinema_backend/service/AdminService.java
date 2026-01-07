@@ -31,7 +31,7 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
         // Tạo Token với role ADMIN
-        String jwtToken = jwtService.generateToken(admin.getUsername());
+        String jwtToken = jwtService.generateToken(admin.getUsername(), "ROLE_ADMIN");
 
         return new AuthResponse(jwtToken);
     }

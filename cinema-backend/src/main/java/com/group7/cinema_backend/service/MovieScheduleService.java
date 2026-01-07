@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,6 @@ public class MovieScheduleService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final ShowtimeRepository showtimeRepository;
-    private final CinemaRepository cinemaRepository;
     private final RoomRepository roomRepository;
     private final ShowSeatRepository showSeatRepository;
     private final SeatTemplateRepository seatTemplateRepository;
