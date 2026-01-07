@@ -4,12 +4,17 @@ import com.group7.cinema_backend.dto.AuthResponse;
 import com.group7.cinema_backend.dto.LoginRequest;
 import com.group7.cinema_backend.dto.MovieScheduleRequest;
 import com.group7.cinema_backend.dto.MovieScheduleResponse;
+import com.group7.cinema_backend.dto.RevenueStatsRequest;
+import com.group7.cinema_backend.dto.RevenueStatsResponse;
 import com.group7.cinema_backend.entity.Cinema;
 import com.group7.cinema_backend.entity.Genre;
+import com.group7.cinema_backend.entity.Movie;
 import com.group7.cinema_backend.repository.CinemaRepository;
 import com.group7.cinema_backend.repository.GenreRepository;
+import com.group7.cinema_backend.repository.MovieRepository;
 import com.group7.cinema_backend.service.AdminService;
 import com.group7.cinema_backend.service.MovieScheduleService;
+import com.group7.cinema_backend.service.RevenueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +28,10 @@ public class AdminController {
 
     private final AdminService adminService;
     private final MovieScheduleService movieScheduleService;
+    private final RevenueService revenueService;
     private final CinemaRepository cinemaRepository;
     private final GenreRepository genreRepository;
+    private final MovieRepository movieRepository;
 
     @PostMapping("/auth/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
@@ -55,5 +62,17 @@ public class AdminController {
     @GetMapping("/genres")
     public ResponseEntity<List<Genre>> getGenres() {
         return ResponseEntity.ok(genreRepository.findAll());
+    }
+
+    // Lấy danh sách movies (cho filter)
+    @GetMapping("/movies")
+    public ResponseEntity<List<Movie>> getMovies() {
+        return ResponseEntity.ok(movieRepository.findAll());
+    }
+
+    // Thống kê doanh thu
+    @PostMapping("/revenue/stats")
+    public ResponseEntity<RevenueStatsResponse> getRevenueStats(@RequestBody RevenueStatsRequest request) {
+        return ResponseEntity.ok(revenueService.getRevenueStats(request));
     }
 }
