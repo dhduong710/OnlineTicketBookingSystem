@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Frontend / Node
+node_modules/
+**/dist/
+cinema-frontend/.env
+cinema-frontend/.env.*
+.env
+.env.*
