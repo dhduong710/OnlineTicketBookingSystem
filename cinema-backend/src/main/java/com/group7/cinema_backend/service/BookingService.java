@@ -50,14 +50,22 @@ public class BookingService {
 
         // 3. TÍNH TIỀN VÉ
         double totalTicketPrice = 0;
-        double basePrice = is3DMovie(showtime.getFormat()) ? 70000 : 50000;
 
         for (ShowSeat seat : selectedSeats) {
-            // Logic giá: Giá gốc (Có thể mở rộng logic VIP ở đây nếu SeatTemplate có field Type)
-            double seatPrice = basePrice;
+            // Sử dụng giá đã được set sẵn từ lúc tạo showtime
+            // (giá đã bao gồm logic VIP và format 2D/3D)
+            double seatPrice = seat.getSoldPrice();
             
-            // Cập nhật giá bán thực tế vào ShowSeat (để lưu lịch sử giá lúc mua)
-            seat.setSoldPrice(seatPrice);
+            // Nếu ghế chưa có giá (dữ liệu cũ), tính lại
+            if (seatPrice == 0) {
+                double basePrice = is3DMovie(showtime.getFormat()) ? 70000 : 50000;
+                String seatNumber = seat.getSeatTemplate().getSeatNumber();
+                String row = seatNumber.replaceAll("[0-9]", "");
+                boolean isVIP = row.equals("I") || row.equals("J") || row.equals("K") || row.equals("L");
+                seatPrice = isVIP ? basePrice + 20000 : basePrice;
+                seat.setSoldPrice(seatPrice);
+            }
+            
             totalTicketPrice += seatPrice;
         }
 

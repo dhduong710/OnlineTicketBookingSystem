@@ -55,13 +55,18 @@ public class MovieScheduleService {
                 continue; // Bỏ qua rạp không có phòng
             }
 
-            // Dùng phòng đầu tiên (có thể cải thiện logic này)
-            Room room = rooms.get(0);
-
             // Tạo showtime cho mỗi ngày
             for (LocalDate showDate : request.getShowDates()) {
                 // Tạo showtime cho mỗi khung giờ
                 for (MovieScheduleRequest.ShowtimeSlot slot : request.getShowtimeSlots()) {
+                    // Chọn phòng dựa trên format
+                    Room room = selectRoomByFormat(rooms, slot.getFormat());
+                    
+                    if (room == null) {
+                        System.out.println("Không tìm thấy phòng phù hợp cho format " + slot.getFormat() + " tại rạp " + cinemaId);
+                        continue; // Bỏ qua nếu không tìm thấy phòng phù hợp
+                    }
+                    
                     Showtime showtime = new Showtime();
                     showtime.setMovie(savedMovie);
                     showtime.setRoom(room);
@@ -87,15 +92,48 @@ public class MovieScheduleService {
         );
     }
 
+    /**
+     * Chọn phòng phù hợp dựa trên format (2D hoặc 3D)
+     * - 2D: Phòng 1 hoặc Phòng 2 (100 ghế - 10 hàng)
+     * - 3D: Phòng 3 (120 ghế - 12 hàng)
+     */
+    private Room selectRoomByFormat(List<Room> rooms, String format) {
+        if ("3D".equalsIgnoreCase(format)) {
+            // Tìm phòng 3 (phòng 3D)
+            return rooms.stream()
+                    .filter(r -> r.getName().contains("3") || r.getName().toLowerCase().contains("3d"))
+                    .findFirst()
+                    .orElse(null);
+        } else {
+            // 2D: Tìm phòng 1 hoặc 2 (ưu tiên phòng 1)
+            return rooms.stream()
+                    .filter(r -> r.getName().contains("1") || r.getName().contains("2"))
+                    .filter(r -> !r.getName().contains("3")) // Loại trừ phòng 3
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
     private void createShowSeats(Showtime showtime, Room room) {
-        // Lấy template ghế của phòng (giả sử mỗi phòng có template riêng)
-        List<SeatTemplate> templates = seatTemplateRepository.findAll();
+        // Lấy template ghế của phòng cụ thể
+        List<SeatTemplate> templates = seatTemplateRepository.findByRoomId(room.getId());
+        
+        // Tính giá cơ bản dựa trên format
+        double basePrice = "3D".equalsIgnoreCase(showtime.getFormat()) ? 70000 : 50000;
         
         for (SeatTemplate template : templates) {
             ShowSeat showSeat = new ShowSeat();
             showSeat.setShowtime(showtime);
             showSeat.setSeatTemplate(template);
             showSeat.setStatus("AVAILABLE");
+            
+            // Tính giá ghế: VIP (2 hàng cuối) = basePrice + 20000, Standard = basePrice
+            String seatNumber = template.getSeatNumber();
+            String row = seatNumber.replaceAll("[0-9]", ""); // Lấy hàng (A, B, C...)
+            boolean isVIP = row.equals("I") || row.equals("J") || row.equals("K") || row.equals("L");
+            double seatPrice = isVIP ? basePrice + 20000 : basePrice;
+            
+            showSeat.setSoldPrice(seatPrice);
             showSeatRepository.save(showSeat);
         }
     }
